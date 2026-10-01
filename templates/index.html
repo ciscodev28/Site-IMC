@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Início
+{% endblock %}
+
+{% block content %}
+
+<section>
+    <h1>Bem-vindo ao Portal Saúde & Bem-Estar!</h1>
+
+    <p>
+        Este portal reúne ferramentas e informações relacionadas à saúde e ao bem-estar.
+    </p>
+</section>
+
+<section>
+    <h2>Calculadora Matemática</h2>
+
+    <form action="{{ url_for('math') }}" method="GET">
+
+        <label>Primeiro número:</label>
+        <input type="number" name="a" step="any" required>
+
+        <br><br>
+
+        <label>Operação:</label>
+
+        <select name="op" required>
+            <option value="soma">Soma</option>
+            <option value="subtracao">Subtração</option>
+            <option value="multiplicacao">Multiplicação</option>
+            <option value="divisao">Divisão</option>
+        </select>
+
+        <br><br>
+
+        <label>Segundo número:</label>
+        <input type="number" name="b" step="any" required>
+
+        <br><br>
+
+        <button type="submit">
+            Calcular
+        </button>
+
+    </form>
+</section>

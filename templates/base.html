@@ -3,12 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>{%block title %} Portal Saúde & Bem-Estar {%endblock%}</title>
 </head>
 <body>
     <h1> Hoje nois vai te pesar e tirar teu IMC</h1>
     {%include "header.html" %}
-    {% block content %}{% endblock %}
-    {%include "footer.html" %}
+
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer>
+        <p> Portal Saúde & Bem-Estar </p>
+    </footer>
 </body>
 </html>
