@@ -3,5 +3,20 @@ from flask import Flask, render_template
 app = Flask(__name__)
 
 @app.route("/")
-def hello_world():
-    return render_template("index.html", title="Hello")
+def inicio():
+    return render_template("index.html")
+
+@app.route("/sobre")
+def sobre():
+    return render_template("sobre.html")
+
+@app.route("/login")
+def login():
+    return render_template("login.html")
+
+@app.route("/perfil")
+def perfil():
+    return render_template("perfil.html")
+
+if __name__ == "__main__":
+    app.run(debug=True)
