@@ -1,3 +1,4 @@
+
 {% extends 'base.html' %}
 
 {% block title %}
@@ -17,14 +18,14 @@ Início
 <section>
     <h2>Calculadora Matemática</h2>
 
-    <form onsubmit="calcular(); return false;">
+    <form id="formMatematica">
 
-        <label>Primeiro número:</label>
+        <label for="a">Primeiro número:</label>
         <input type="number" id="a" step="any" required>
 
         <br><br>
 
-        <label>Operação:</label>
+        <label for="op">Operação:</label>
 
         <select id="op" required>
             <option value="soma">Soma</option>
@@ -35,7 +36,7 @@ Início
 
         <br><br>
 
-        <label>Segundo número:</label>
+        <label for="b">Segundo número:</label>
         <input type="number" id="b" step="any" required>
 
         <br><br>
@@ -47,29 +48,18 @@ Início
     </form>
 </section>
 
-<script>
-function calcular() {
-
-    let a = document.getElementById("a").value;
-    let b = document.getElementById("b").value;
-    let op = document.getElementById("op").value;
-
-    window.location.href = "/math/" + op + "/" + a + "/" + b;
-}
-</script>
-
 <section>
     <h2>Calculadora de IMC</h2>
 
-    <form action="{{ url_for('imc') }}" method="GET">
+    <form id="formIMC">
 
-        <label>Peso (kg):</label>
-        <input type="number" name="peso" step="any" required>
+        <label for="peso">Peso (kg):</label>
+        <input type="number" id="peso" min="0.1" step="any" required>
 
         <br><br>
 
-        <label>Altura (m):</label>
-        <input type="number" name="altura" step="any" required>
+        <label for="altura">Altura (m):</label>
+        <input type="number" id="altura" min="0.1" step="any" required>
 
         <br><br>
 
@@ -79,4 +69,26 @@ function calcular() {
 
     </form>
 </section>
+
+<script>
+document.getElementById("formMatematica").addEventListener("submit", function(event) {
+    event.preventDefault();
+
+    let a = document.getElementById("a").value;
+    let b = document.getElementById("b").value;
+    let op = document.getElementById("op").value;
+
+    window.location.href = "/math/" + op + "/" + a + "/" + b;
+});
+
+document.getElementById("formIMC").addEventListener("submit", function(event) {
+    event.preventDefault();
+
+    let peso = document.getElementById("peso").value;
+    let altura = document.getElementById("altura").value;
+
+    window.location.href = "/imc/" + peso + "/" + altura;
+});
+</script>
+
 {% endblock %}

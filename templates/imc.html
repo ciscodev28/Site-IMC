@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}
+Resultado do IMC
+{% endblock %}
+
+{% block content %}
+
+<h1> Resultado do IMC</h1>
+
+<section>
+    <h2> Seus dados</h2>
+
+    <p>
+        <strong>Peso:</strong> {{ peso }} kg
+    </p>
+
+    <p>
+        <strong>Altura:</strong> {{ altura }} m
+    </p>
+</section>
+
+<section>
+    <h2>Seu IMC</h2>
+
+    <p>
+        <strong> {{ "%.0f"|format(imc) }} </strong>
+    </p>
+
+
+    <h2>Classificação do IMC</h2>
+
+<div>
+    <p>
+        <strong>Seu resultado:</strong> {{ classificacao }}
+    </p>
+</div>
+
+<table border="1">
+    <tr>
+        <th>Classificação</th>
+        <th>Faixa de IMC</th>
+    </tr>
+
+    <tr>
+        <td>Magreza</td>
+        <td>Abaixo de 18,5</td>
+    </tr>
+
+    <tr>
+        <td>Normal</td>
+        <td>18,5 a 24,9</td>
+    </tr>
+
+    <tr>
+        <td>Sobrepeso</td>
+        <td>25,0 a 29,9</td>
+    </tr>
+
+    <tr>
+        <td>Obesidade</td>
+        <td>30,0 ou mais</td>
+    </tr>
+</table>
+</section>
+
+<section>
+    <h2>Faixa de peso</h2>
+
+    <p>Para sua altura de {{altura}} m, a faixa correspondente ao IMC considerado
+        normal fica aproximadamente entre:
+    </p>
+
+    <p>
+        <strong> {{peso_minimo }} kg</strong>
+        e
+        <strong> {{ peso_maximo }} kg</strong>
+    </p>
+</section>
+<br><br>
+
+<a href="{{ url_for('inicio')}}">
+    Voltar para o Início
+</a>
+
+{% endblock %}

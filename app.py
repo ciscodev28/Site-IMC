@@ -59,5 +59,40 @@ def math(op, a, b):
         nome_operacao=nome_operacao,
         simbolo=simbolo
     )
+
+
+@app.route("/imc/<peso>/<altura>")
+def imc(peso, altura):
+
+    peso = float(peso)
+    altura = float(altura)
+
+    imc_calculado = peso / (altura **2)
+    peso_minimo = 18.5 * (altura **2)
+    peso_maximo = 24.9 * (altura **2)
+
+
+    if imc_calculado < 18.5:
+        classificacao = "Magreza"
+
+    elif imc_calculado < 25:
+        classificacao = "Normal"
+
+    elif imc_calculado <30:
+        classificacao = "Sobrepeso"
+
+    else:
+        classificacao = "Obesidade"
+
+    return render_template(
+        "imc.html",
+        peso=peso,
+        altura=altura,
+        imc = imc_calculado,
+        classificacao = classificacao,
+        peso_minimo = peso_minimo,
+        peso_maximo= peso_maximo
+    )
+
 if __name__ == "__main__":
     app.run(debug=True)
