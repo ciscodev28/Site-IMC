@@ -28,13 +28,13 @@ def math(op, a, b):
         nome_operacao = "Soma"
         simbolo = "+"
 
-    elif op == "subtração":
+    elif op == "subtracao":
         resultado = a - b
         nome_operacao = "Subtração"
         simbolo = "-"
 
     elif op == "multiplicacao":
-            resultado = a x b
+            resultado = a * b
             nome_operacao = "Multiplicação"
             simbolo = "x"    
 
