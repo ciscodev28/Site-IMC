@@ -1,4 +1,3 @@
-
 {% extends 'base.html' %}
 
 {% block title %}
@@ -7,71 +6,149 @@ Início
 
 {% block content %}
 
-<section>
-    <h1>Bem-vindo ao Portal Saúde & Bem-Estar!</h1>
+<section class="hero">
+    <div class="hero-content">
 
-    <p>
-        Este portal reúne ferramentas e informações relacionadas à saúde e ao bem-estar.
-    </p>
+        <span class="hero-tag">
+            SAÚDE E BEM-ESTAR
+        </span>
+        <h1>
+            Cuide de você.<br>
+            <span>Sua saúde em primeiro lugar.</span>
+        </h1>
+        <p>
+            Encontre ferramentas e informações que ajudam você
+            a conhecer melhor sua saúde e cuidar do seu bem-estar.
+        </p>
+    </div>
 </section>
+<section class="calculadoras">
+    <div class="section-heading">
+        <span>FERRAMENTAS</span>
+        <h2>
+            Explore nossas calculadoras
+        </h2>
+        <p>
+            Utilize nossas ferramentas de maneira simples e rápida.
+        </p>
+    </div>
 
-<section>
-    <h2>Calculadora Matemática</h2>
+    <div class="calculator-grid">
+        <div class="calculator-card">
+            <h3>
+                Calculadora Matemática
+            </h3>
+            <p>
+                Realize operações matemáticas de forma rápida e prática.
+            </p>
 
-    <form id="formMatematica">
+            <form id="formMatematica">
 
-        <label for="a">Primeiro número:</label>
-        <input type="number" id="a" step="any" required>
+                <div class="form-group">
+                    <label for="a">
+                        Primeiro número
+                    </label>
 
-        <br><br>
+                    <input
+                        type="number"
+                        id="a"
+                        step="any"
+                        placeholder="Digite um número"
+                        required
+                    >
+                </div>
 
-        <label for="op">Operação:</label>
+                <div class="form-group">
+                    <label for="op">
+                        Operação
+                    </label>
+                    <select id="op" required>
 
-        <select id="op" required>
-            <option value="soma">Soma</option>
-            <option value="subtracao">Subtração</option>
-            <option value="multiplicacao">Multiplicação</option>
-            <option value="divisao">Divisão</option>
-        </select>
+                        <option value="soma">
+                            Soma (+)
+                        </option>
 
-        <br><br>
+                        <option value="subtracao">
+                            Subtração (-)
+                        </option>
 
-        <label for="b">Segundo número:</label>
-        <input type="number" id="b" step="any" required>
+                        <option value="multiplicacao">
+                            Multiplicação (×)
+                        </option>
 
-        <br><br>
+                        <option value="divisao">
+                            Divisão (÷)
+                        </option>
 
-        <button type="submit">
-            Calcular
-        </button>
+                    </select>
+                </div>
 
-    </form>
+                <div class="form-group">
+                    <label for="b">
+                        Segundo número
+                    </label>
+                    <input
+                        type="number"
+                        id="b"
+                        step="any"
+                        placeholder="Digite outro número"
+                        required
+                    >
+                </div>
+                <button type="submit" class="btn-primary">
+                    Calcular resultado →
+                </button>
+            </form>
+        </div>
+
+        <div class="calculator-card">
+            <h3>
+                Calculadora de IMC
+            </h3>
+            <p>
+                Descubra seu índice de massa corporal a partir
+                dos dados informados.
+            </p>
+            <form id="formIMC">
+                <div class="form-group">
+                    <label for="peso">
+                        Peso (kg)
+                    </label>
+                    <input
+                        type="number"
+                        id="peso"
+                        min="0.1"
+                        step="any"
+                        placeholder="Ex.: 65"
+                        required
+                    >
+                </div>
+                <div class="form-group">
+                    <label for="altura">
+                        Altura (m)
+                    </label>
+
+                    <input
+                        type="number"
+                        id="altura"
+                        min="0.1"
+                        step="any"
+                        placeholder="Ex.: 1.70"
+                        required
+                    >
+                </div>
+
+                <button type="submit" class="btn-primary">
+                    Calcular IMC →
+                </button>
+            </form>
+        </div>
+    </div>
 </section>
-
-<section>
-    <h2>Calculadora de IMC</h2>
-
-    <form id="formIMC">
-
-        <label for="peso">Peso (kg):</label>
-        <input type="number" id="peso" min="0.1" step="any" required>
-
-        <br><br>
-
-        <label for="altura">Altura (m):</label>
-        <input type="number" id="altura" min="0.1" step="any" required>
-
-        <br><br>
-
-        <button type="submit">
-            Calcular IMC
-        </button>
-
-    </form>
-</section>
-
 <script>
+
 document.getElementById("formMatematica").addEventListener("submit", function(event) {
+
     event.preventDefault();
 
     let a = document.getElementById("a").value;
@@ -79,16 +156,20 @@ document.getElementById("formMatematica").addEventListener("submit", function(ev
     let op = document.getElementById("op").value;
 
     window.location.href = "/math/" + op + "/" + a + "/" + b;
+
 });
 
 document.getElementById("formIMC").addEventListener("submit", function(event) {
+
     event.preventDefault();
 
     let peso = document.getElementById("peso").value;
     let altura = document.getElementById("altura").value;
 
     window.location.href = "/imc/" + peso + "/" + altura;
+
 });
+
 </script>
 
 {% endblock %}

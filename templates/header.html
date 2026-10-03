@@ -1,25 +1,16 @@
-<header>
-
-    <nav>
-
-        <h1>Portal Saúde & Bem-Estar</h1>
-
-        <a href="{{ url_for('inicio') }}">
-            Início
+<header class="header">
+    <div class="header-container">
+        <a href="{{ url_for('inicio') }}" class="logo">
+            <span class="logo-icon">+</span>
+            <span>Saúde<span>&</span>Bem-Estar</span>
         </a>
-
-        <a href="{{ url_for('sobre') }}">
-            Sobre
-        </a>
-
-        <a href="{{ url_for('login') }}">
-            Login
-        </a>
-
-        <a href="{{ url_for('perfil') }}">
-            Perfil
-        </a>
-
-    </nav>
-
+        <nav class="navbar">
+            <a href="{{ url_for('inicio') }}">Início</a>
+            <a href="{{ url_for('sobre') }}">Sobre</a>
+            <a href="{{ url_for('login') }}">Login</a>
+            <a href="{{ url_for('perfil') }}" class="profile-link">
+                Perfil
+            </a>
+        </nav>
+    </div>
 </header>
