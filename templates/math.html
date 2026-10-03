@@ -1,13 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}
+Math
+{% endblock %}
+
 {%block content%}
 
-<h1> Resultado da Calculadora</h1>
+<body class="alin">
 
-<p> Operação : {{nome_operacao}} </p>
+ 
+ <h1> Resultado da Calculadora</h1>
 
-<h2>
+ <p> Operação : {{nome_operacao}} </p>
+
+ <h2>
     {{ a }} {{simbolo}} {{ b }} = {{resultado}}
-</h2>
+ </h2>
 
-<a href="{{ url_for ('inicio')}}">Voltar para o Início</a>
+ <a href="{{ url_for ('inicio')}}">Voltar para o Início</a>
+</body>
 
 {%endblock%}
