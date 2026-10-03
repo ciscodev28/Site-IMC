@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}
+Perfil
+{% endblock %}
+
+{% block content %}
+
+<h1>Meu Perfil</h1>
+
+<section>
+
+    <h2>Dados do usuário</h2>
+
+    <p>
+        <strong>Nome:</strong>
+        {{ nome }}
+    </p>
+
+    <p>
+        <strong>E-mail:</strong>
+        {{ email }}
+    </p>
+
+    <p>
+        <strong>Idade:</strong>
+        {{ idade }} anos
+    </p>
+
+    <p>
+        <strong>Peso:</strong>
+        {{ peso }} kg
+    </p>
+
+    <p>
+        <strong>Altura:</strong>
+        {{ altura }} m
+    </p>
+
+</section>
+
+
+<section>
+
+    <h2>Minhas metas</h2>
+
+    <ul>
+        <li>Melhorar a saúde</li>
+        <li>Manter uma rotina saudável</li>
+        <li>Acompanhar o IMC</li>
+    </ul>
+
+</section>
+
+
+<section>
+
+    <h2>Calculadora de IMC</h2>
+
+    <p>
+        Calcule seu IMC utilizando seu peso e sua altura.
+    </p>
+
+    {% if peso and altura %}
+    <a href="{{ url_for('imc', peso=peso, altura=altura) }}">
+        Calcular meu IMC
+    </a>
+    {% else %}
+    <p>
+        Para calcular seu IMC, informe seu peso e sua altura no login.
+    </p>
+
+    {% endif %}
+</section>
+
+{% endblock %}

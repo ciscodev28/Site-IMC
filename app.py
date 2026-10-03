@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, redirect, url_for
 
 app = Flask(__name__)
 
@@ -10,13 +10,55 @@ def inicio():
 def sobre():
     return render_template("about.html")
 
-@app.route("/login")
+@app.route("/login", methods=["GET", "POST"])
 def login():
+
+    if request.method == "POST":
+
+        usuario = request.form["usuario"]
+        senha = request.form["senha"]
+
+        if usuario == "admin" and senha == "1234":
+
+            nome = request.form["nome"]
+            email = request.form["email"]
+            idade = request.form["idade"]
+            peso = request.form["peso"]
+            altura = request.form["altura"]
+
+            return redirect(
+                url_for(
+                    "perfil",
+                    nome=nome,
+                    email=email,
+                    idade=idade,
+                    peso=peso,
+                    altura=altura
+                )
+            )
+
+        else:
+            return "Usuário ou senha incorretos."
+
     return render_template("login.html")
 
-@app.route("/perfil")
+@app.route("/profile")
 def perfil():
-    return render_template("profile.html")
+
+    nome = request.args.get("nome")
+    email = request.args.get("email")
+    idade = request.args.get("idade")
+    peso = request.args.get("peso")
+    altura = request.args.get("altura")
+
+    return render_template(
+        "profile.html",
+        nome=nome,
+        email=email,
+        idade=idade,
+        peso=peso,
+        altura=altura
+    )
 
 @app.route("/math/<op>/<a>/<b>")
 def math(op, a, b):
