@@ -23,6 +23,7 @@ def login():
             nome = request.form["nome"]
             email = request.form["email"]
             idade = request.form["idade"]
+            sexo = request.form["sexo"]
             peso = request.form["peso"]
             altura = request.form["altura"]
 
@@ -33,7 +34,8 @@ def login():
                     email=email,
                     idade=idade,
                     peso=peso,
-                    altura=altura
+                    altura=altura,
+                    sexo=sexo
                 )
             )
 
@@ -50,6 +52,7 @@ def perfil():
     idade = request.args.get("idade")
     peso = request.args.get("peso")
     altura = request.args.get("altura")
+    sexo = request.args.get("sexo")
 
     return render_template(
         "profile.html",
@@ -57,7 +60,8 @@ def perfil():
         email=email,
         idade=idade,
         peso=peso,
-        altura=altura
+        altura=altura,
+        sexo=sexo
     )
 
 @app.route("/math/<op>/<a>/<b>")
@@ -109,6 +113,9 @@ def imc(peso, altura):
     peso = float(peso)
     altura = float(altura)
 
+    idade = request.args.get("idade", type=int)
+    sexo = request.args.get*("sexo")
+
     imc_calculado = peso / (altura **2)
     peso_minimo = 18.5 * (altura **2)
     peso_maximo = 24.9 * (altura **2)
@@ -126,14 +133,124 @@ def imc(peso, altura):
     else:
         classificacao = "Obesidade"
 
+    # Estimativa do percentual de gordura #
+
+    percentual_gordura = None
+    classificacao_gordura = None
+
+    if idade is not None and sexo in ["masculino" , "feminino"]:
+
+        if sexo == "masculino":
+            percentual_gordura = (
+                1.20 * imc_calculado
+                + 0.23 * idade
+                - 16.2
+            )
+
+        else:
+            percentual_gordura = (
+                1.20 * imc_calculado
+                + 0.23 * idade
+                - 5.4
+            )
+
+    # Classificação do percentual de gordura #
+
+    if sexo == "masculino":
+
+        if percentual_gordura <6:
+            classificacao_gordura = "Essencial"
+
+        elif percentual_gordura <14:
+            classificacao_gordura = "Atlético"
+        
+        elif percentual_gordura <18:
+            classificacao_gordura = "Fitness"
+
+        elif percentual_gordura <25:
+            classificacao_gordura = "Aceitável"
+
+        else:
+            classificacao_gordura = "Obesidade"
+
+    else:
+
+        if percentual_gordura <14:
+            classificacao_gordura = "Essencial"
+        
+        elif percentual_gordura <21:
+            classificacao_gordura = "Atlético"
+                
+        elif percentual_gordura <25:
+            classificacao_gordura = "Fitness"
+        
+        elif percentual_gordura <32:
+            classificacao_gordura = "Aceitável"
+        
+        else:
+            classificacao_gordura = "Obesidade"
+
+    # Recomendações #
+
+    if classificacao == "Magreza":
+
+        recomendacao = (
+            "Para esta classificação, o projeto recomneda: atenção aos hábitos" \
+            "de saúde e acompahamento profissional."
+        )
+
+    elif classificacao == "Normal":
+
+        recomendacao = (
+            "Mantenha hábitos de vida saudáveis e acompanhe" \
+            "regularmente seus indicadores de saúde."
+        )
+
+    elif classificacao == "Sobrepeso":
+
+        recomendacao = (
+            "É recomendado observar os hábitos de saúde e, quando necessário," \
+            "buscar orientações profissional."
+        )
+
+    else:
+
+        recomendacao = (
+            "É recomendado buscar orientação de um profissional de saúde para " \
+            "uma avaliação individualizada."
+        )
+
     return render_template(
         "imc.html",
         peso=peso,
         altura=altura,
+        idade=idade,
+        sexo=sexo,
         imc = imc_calculado,
         classificacao = classificacao,
         peso_minimo = peso_minimo,
-        peso_maximo= peso_maximo
+        peso_maximo= peso_maximo,
+        percentual_gordura=percentual_gordura,
+        classificacao_gordura=classificacao_gordura,
+        recomendacao=recomendacao
+    )
+
+@app.route("/imc-novo")
+def imc_novo():
+
+    peso = request.args.get("peso")
+    altura = request.args.get("altura")
+    idade = request.args.get("idade")
+    sexo = request.args.get("sexo")
+
+    return redirect(
+        url_for(
+            "imc",
+            peso=peso,
+            altura=altura,
+            idade=idade,
+            sexo=sexo
+        )
     )
 
 if __name__ == "__main__":

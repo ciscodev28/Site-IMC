@@ -11,7 +11,6 @@ Resultado do IMC
 <section>
 
     <h2>Seus dados</h2>
-
     <p>
         <strong>Peso:</strong> {{ peso }} kg
     </p>
@@ -20,51 +19,103 @@ Resultado do IMC
         <strong>Altura:</strong> {{ altura }} m
     </p>
 
+    {% if idade %}
+    <p>
+        <strong>Idade:</strong> {{ idade }} anos
+    </p>
+    {% endif %}
+
+    {% if sexo %}
+    <p>
+        <strong>Sexo:</strong> {{ sexo }}
+    </p>
+    {% endif %}
+
 </section>
 
 <section>
 
-    <h2>Seu IMC</h2>
+    <h2>
+        Seu IMC
+        <span title="O IMC é calculado dividindo o peso pela altura ao quadrado.">
+            ❓
+        </span>
+    </h2>
 
     <p>
-        <strong>{{ "%.2f"|format(imc) }}</strong>
+        <strong>
+            {{ "%.2f"|format(imc) }}
+        </strong>
     </p>
 
-    <h2>Classificação do IMC</h2>
+    <h2>
+        Classificação
+        <span title="A classificação é determinada de acordo com a faixa de IMC.">
+            ❓
+        </span>
+    </h2>
 
-    <div>
+    <p>
+        <strong>{{ classificacao }}</strong>
+    </p>
 
-        <p>
-            <strong>Seu resultado:</strong> {{ classificacao }}
-        </p>
+</section>
 
-    </div>
+<section>
+
+    <h2>
+        Régua do IMC
+        <span title="A régua apresenta as principais faixas de classificação do IMC.">
+            ❓
+        </span>
+    </h2>
 
     <table border="1">
 
         <tr>
-            <th>Classificação</th>
-            <th>Faixa de IMC</th>
+            <th>Magreza</th>
+            <th>Normal</th>
+            <th>Sobrepeso</th>
+            <th>Obesidade</th>
         </tr>
 
         <tr>
-            <td>Magreza</td>
-            <td>Abaixo de 18,5</td>
-        </tr>
+            <td>
+                Abaixo de 18,5
 
-        <tr>
-            <td>Normal</td>
-            <td>18,5 a 24,9</td>
-        </tr>
+                {% if classificacao == "Magreza" %}
+                <br>
+                ▲ Seu IMC
+                {% endif %}
+            </td>
 
-        <tr>
-            <td>Sobrepeso</td>
-            <td>25,0 a 29,9</td>
-        </tr>
+            <td>
+                18,5 até 24,9
 
-        <tr>
-            <td>Obesidade</td>
-            <td>30,0 ou mais</td>
+                {% if classificacao == "Normal" %}
+                <br>
+                ▲ Seu IMC
+                {% endif %}
+            </td>
+
+            <td>
+                25 até 29,9
+
+                {% if classificacao == "Sobrepeso" %}
+                <br>
+                ▲ Seu IMC
+                {% endif %}
+            </td>
+
+            <td>
+                30 ou mais
+
+                {% if classificacao == "Obesidade" %}
+                <br>
+                ▲ Seu IMC
+                {% endif %}
+            </td>
+
         </tr>
 
     </table>
@@ -76,19 +127,147 @@ Resultado do IMC
     <h2>Faixa de peso</h2>
 
     <p>
-        Para sua altura de {{ altura }} m, a faixa correspondente
-        ao IMC considerado normal fica aproximadamente entre:
+        Para a altura de {{ altura }} m, a faixa correspondente
+        ao IMC de 18,5 até 24,9 fica aproximadamente entre:
     </p>
 
     <p>
-        <strong>{{ "%.2f"|format(peso_minimo) }} kg</strong>
+
+        <strong>
+            {{ "%.2f"|format(peso_minimo) }} kg
+        </strong>
+
         e
-        <strong>{{ "%.2f"|format(peso_maximo) }} kg</strong>
+
+        <strong>
+            {{ "%.2f"|format(peso_maximo) }} kg
+        </strong>
+
     </p>
 
 </section>
 
-<br><br>
+{% if percentual_gordura is not none %}
+
+<section>
+
+    <h2>
+        Estimativa de gordura corporal
+        <span title="A estimativa utiliza o IMC, a idade e o sexo informados.">
+            ❓
+        </span>
+    </h2>
+
+    <p>
+        Percentual estimado:
+        <strong>
+            {{ "%.2f"|format(percentual_gordura) }}%
+        </strong>
+    </p>
+
+    <p>
+        Classificação:
+        <strong>
+            {{ classificacao_gordura }}
+        </strong>
+    </p>
+
+</section>
+
+{% endif %}
+
+<section>
+
+    <h2>Recomendação</h2>
+
+    <p>
+        {{ recomendacao }}
+    </p>
+
+</section>
+
+<section>
+
+    <h2>Fazer novo cálculo</h2>
+
+    <form action="{{ url_for('imc_novo') }}" method="GET">
+
+        <label for="peso">
+            Peso (kg):
+        </label>
+
+        <input
+            type="number"
+            id="peso"
+            name="peso"
+            step="any"
+            min="0.1"
+            required
+        >
+
+        <br><br>
+
+        <label for="altura">
+            Altura (m):
+        </label>
+
+        <input
+            type="number"
+            id="altura"
+            name="altura"
+            step="any"
+            min="0.1"
+            required
+        >
+
+        <br><br>
+
+        <label for="idade">
+            Idade:
+        </label>
+
+        <input
+            type="number"
+            id="idade"
+            name="idade"
+            min="1"
+            required
+        >
+
+        <br><br>
+
+        <label for="sexo">
+            Sexo:
+        </label>
+
+        <select id="sexo" name="sexo" required>
+
+            <option value="">
+                Selecione
+            </option>
+
+            <option value="masculino">
+                Masculino
+            </option>
+
+            <option value="feminino">
+                Feminino
+            </option>
+
+        </select>
+
+        <br><br>
+
+
+        <button type="submit">
+            Calcular novamente
+        </button>
+
+    </form>
+
+</section>
+
+<br>
 
 <a href="{{ url_for('inicio') }}">
     Voltar para o Início
