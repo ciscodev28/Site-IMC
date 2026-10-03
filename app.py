@@ -2,16 +2,13 @@ from flask import Flask, render_template, request, redirect, url_for
 
 app = Flask(__name__)
 
-
 @app.route("/")
 def inicio():
     return render_template("index.html")
 
-
 @app.route("/sobre")
 def sobre():
     return render_template("about.html")
-
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -47,7 +44,6 @@ def login():
 
     return render_template("login.html")
 
-
 @app.route("/profile")
 def perfil():
 
@@ -68,7 +64,6 @@ def perfil():
         sexo=sexo
     )
 
-
 @app.route("/math/<op>/<a>/<b>")
 def math(op, a, b):
 
@@ -76,21 +71,25 @@ def math(op, a, b):
     b = float(b)
 
     if op == "soma":
+
         resultado = a + b
         nome_operacao = "Soma"
         simbolo = "+"
 
     elif op == "subtracao":
+
         resultado = a - b
         nome_operacao = "Subtração"
         simbolo = "-"
 
     elif op == "multiplicacao":
+
         resultado = a * b
         nome_operacao = "Multiplicação"
         simbolo = "x"
 
     elif op == "divisao":
+
         nome_operacao = "Divisão"
         simbolo = "÷"
 
@@ -111,7 +110,6 @@ def math(op, a, b):
         simbolo=simbolo
     )
 
-
 @app.route("/imc/<peso>/<altura>")
 def imc(peso, altura):
 
@@ -121,15 +119,24 @@ def imc(peso, altura):
     idade = request.args.get("idade", type=int)
     sexo = request.args.get("sexo")
 
-    # Cálculo do IMC
+    # =========================
+    # CÁLCULO DO IMC
+    # =========================
 
     imc_calculado = peso / (altura ** 2)
 
+    # =========================
+    # FAIXAS DE PESO
+    # =========================
+
     peso_minimo = 18.5 * (altura ** 2)
     peso_maximo = 24.9 * (altura ** 2)
+    peso_sobrepeso = 25 * (altura ** 2)
+    peso_obesidade = 30 * (altura ** 2)
 
-
-    # Classificação do IMC
+    # =========================
+    # CLASSIFICAÇÃO DO IMC
+    # =========================
 
     if imc_calculado < 18.5:
         classificacao = "Magreza"
@@ -143,8 +150,27 @@ def imc(peso, altura):
     else:
         classificacao = "Obesidade"
 
+    # =========================
+    # POSIÇÃO DA BOLINHA
+    # =========================
 
-    # Estimativa do percentual de gordura
+    inicio = peso_minimo
+    fim = peso_obesidade
+
+    if peso <= inicio:
+        posicao_barra = 0
+
+    elif peso >= fim:
+        posicao_barra = 100
+
+    else:
+        posicao_barra = (
+            (peso - inicio) / (fim - inicio)
+        ) * 100
+
+    # =========================
+    # GORDURA CORPORAL
+    # =========================
 
     percentual_gordura = None
     classificacao_gordura = None
@@ -160,15 +186,15 @@ def imc(peso, altura):
             )
 
         else:
-
             percentual_gordura = (
                 1.20 * imc_calculado
                 + 0.23 * idade
                 - 5.4
             )
 
-
-    # Classificação do percentual de gordura
+    # =========================
+    # CLASSIFICAÇÃO DA GORDURA
+    # =========================
 
     if percentual_gordura is not None:
 
@@ -188,9 +214,7 @@ def imc(peso, altura):
 
             else:
                 classificacao_gordura = "Obesidade"
-
         else:
-
             if percentual_gordura < 14:
                 classificacao_gordura = "Essencial"
 
@@ -206,8 +230,9 @@ def imc(peso, altura):
             else:
                 classificacao_gordura = "Obesidade"
 
-
-    # Recomendações
+    # =========================
+    # RECOMENDAÇÃO
+    # =========================
 
     if classificacao == "Magreza":
 
@@ -237,8 +262,9 @@ def imc(peso, altura):
             "de saúde para uma avaliação individualizada."
         )
 
-
-    # Envia os dados para o imc.html
+    # =========================
+    # ENVIAR PARA O HTML
+    # =========================
 
     return render_template(
         "imc.html",
@@ -250,11 +276,13 @@ def imc(peso, altura):
         classificacao=classificacao,
         peso_minimo=peso_minimo,
         peso_maximo=peso_maximo,
+        peso_sobrepeso=peso_sobrepeso,
+        peso_obesidade=peso_obesidade,
+        posicao_barra=posicao_barra,
         percentual_gordura=percentual_gordura,
         classificacao_gordura=classificacao_gordura,
         recomendacao=recomendacao
     )
-
 
 @app.route("/imc-novo")
 def imc_novo():
@@ -273,7 +301,6 @@ def imc_novo():
             sexo=sexo
         )
     )
-
 
 if __name__ == "__main__":
     app.run(debug=True)

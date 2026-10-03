@@ -8,37 +8,50 @@ Resultado do IMC
 
 <h1>Resultado do IMC</h1>
 
-<section>
+<!-- DADOS DO USUÁRIO -->
+
+<section class="content-card">
 
     <h2>Seus dados</h2>
+
     <p>
-        <strong>Peso:</strong> {{ peso }} kg
+        <strong>Peso:</strong>
+        {{ "%.1f"|format(peso) }} kg
     </p>
 
     <p>
-        <strong>Altura:</strong> {{ altura }} m
+        <strong>Altura:</strong>
+        {{ "%.2f"|format(altura) }} m
     </p>
 
     {% if idade %}
+
     <p>
-        <strong>Idade:</strong> {{ idade }} anos
+        <strong>Idade:</strong>
+        {{ idade }} anos
     </p>
+
     {% endif %}
 
     {% if sexo %}
-    <p>
-        <strong>Sexo:</strong> {{ sexo }}
-    </p>
-    {% endif %}
 
+    <p>
+        <strong>Sexo:</strong>
+        {{ sexo }}
+    </p>
+
+    {% endif %}
 </section>
 
-<section>
-
+<!-- RESULTADO DO IMC -->
+<section class="content-card">
     <h2>
         Seu IMC
-        <span title="O IMC é calculado dividindo o peso pela altura ao quadrado.">
+        <span
+            title="O IMC é calculado dividindo o peso pela altura ao quadrado."
+        >
         </span>
+
     </h2>
 
     <p>
@@ -46,112 +59,113 @@ Resultado do IMC
             {{ "%.2f"|format(imc) }}
         </strong>
     </p>
-
     <h2>
         Classificação
-        <span title="A classificação é determinada de acordo com a faixa de IMC.">
+        <span
+            title="A classificação é determinada de acordo com a faixa de IMC."
+        >
         </span>
     </h2>
+    <p>
+        <strong>
+            {{ classificacao }}
+        </strong>
+    </p>
+</section>
+
+<!-- RÉGUA DE PESO -->
+
+<section class="content-card">
+
+    <h2>Régua de peso</h2>
 
     <p>
-        <strong>{{ classificacao }}</strong>
+        A régua indica aproximadamente em qual faixa
+        o seu peso atual se encontra.
     </p>
 
+    <div class="imc-peso-ruler">
+
+        <!-- BARRA -->
+
+        <div class="imc-peso-bar">
+            <!-- MARCADOR -->
+            <div
+                class="imc-peso-marker"
+                style="--imc-posicao: {{ posicao_barra }}%;"
+            ></div>
+        </div>
+
+        <!-- VALORES -->
+
+        <div class="imc-peso-values">
+            <span>
+                {{ "%.1f"|format(peso_minimo) }} kg
+            </span>
+            <span>
+                {{ "%.1f"|format(peso_maximo) }} kg
+            </span>
+            <span>
+                {{ "%.1f"|format(peso_obesidade) }} kg
+            </span>
+        </div>
+
+        <!-- CLASSIFICAÇÕES -->
+
+        <div class="imc-peso-labels">
+            <span>Normal</span>
+            <span>Sobrepeso</span>
+            <span>Obesidade</span>
+        </div>
+    </div>
+
+    <!-- PESO ATUAL -->
+
+    <p class="imc-peso-atual">
+        Peso atual:
+        <strong>
+            {{ "%.1f"|format(peso) }} kg
+        </strong>
+    </p>
 </section>
 
-<section>
+<!-- FAIXA DE PESO -->
 
-    <h2>
-        Régua do IMC
-        <span title="A régua apresenta as principais faixas de classificação do IMC.">
-        </span>
-    </h2>
-
-    <table border="1">
-
-        <tr>
-            <th>Magreza</th>
-            <th>Normal</th>
-            <th>Sobrepeso</th>
-            <th>Obesidade</th>
-        </tr>
-
-        <tr>
-            <td>
-                Abaixo de 18,5
-
-                {% if classificacao == "Magreza" %}
-                <br>
-                ▲ Seu IMC
-                {% endif %}
-            </td>
-
-            <td>
-                18,5 até 24,9
-
-                {% if classificacao == "Normal" %}
-                <br>
-                ▲ Seu IMC
-                {% endif %}
-            </td>
-
-            <td>
-                25 até 29,9
-
-                {% if classificacao == "Sobrepeso" %}
-                <br>
-                ▲ Seu IMC
-                {% endif %}
-            </td>
-
-            <td>
-                30 ou mais
-
-                {% if classificacao == "Obesidade" %}
-                <br>
-                ▲ Seu IMC
-                {% endif %}
-            </td>
-
-        </tr>
-
-    </table>
-
-</section>
-
-<section>
+<section class="content-card">
 
     <h2>Faixa de peso</h2>
 
     <p>
-        Para a altura de {{ altura }} m, a faixa correspondente
-        ao IMC de 18,5 até 24,9 fica aproximadamente entre:
+        Para a altura de
+        <strong>
+            {{ "%.2f"|format(altura) }} m
+        </strong>,
+        a faixa correspondente ao IMC
+        de 18,5 até 24,9 fica aproximadamente entre:
     </p>
 
     <p>
-
         <strong>
             {{ "%.2f"|format(peso_minimo) }} kg
         </strong>
-
         e
-
         <strong>
             {{ "%.2f"|format(peso_maximo) }} kg
         </strong>
-
     </p>
-
 </section>
+
+<!-- GORDURA CORPORAL -->
 
 {% if percentual_gordura is not none %}
 
-<section>
+<section class="content-card">
 
     <h2>
         Estimativa de gordura corporal
-        <span title="A estimativa utiliza o IMC, a idade e o sexo informados.">
-            ❓
+        <span
+            title="A estimativa utiliza o IMC, a idade e o sexo informados."
+        >
         </span>
     </h2>
 
@@ -160,6 +174,7 @@ Resultado do IMC
         <strong>
             {{ "%.2f"|format(percentual_gordura) }}%
         </strong>
+
     </p>
 
     <p>
@@ -168,12 +183,13 @@ Resultado do IMC
             {{ classificacao_gordura }}
         </strong>
     </p>
-
 </section>
 
 {% endif %}
 
-<section>
+<!-- RECOMENDAÇÃO -->
+
+<section class="content-card">
 
     <h2>Recomendação</h2>
 
@@ -183,11 +199,16 @@ Resultado do IMC
 
 </section>
 
-<section>
+<!-- NOVO CÁLCULO -->
+
+<section class="content-card">
 
     <h2>Fazer novo cálculo</h2>
 
-    <form action="{{ url_for('imc_novo') }}" method="GET">
+    <form
+        action="{{ url_for('imc_novo') }}"
+        method="GET"
+    >
 
         <label for="peso">
             Peso (kg):
@@ -237,8 +258,11 @@ Resultado do IMC
             Sexo:
         </label>
 
-        <select id="sexo" name="sexo" required>
-
+        <select
+            id="sexo"
+            name="sexo"
+            required
+        >
             <option value="">
                 Selecione
             </option>
@@ -254,7 +278,6 @@ Resultado do IMC
         </select>
 
         <br><br>
-
 
         <button type="submit">
             Calcular novamente
