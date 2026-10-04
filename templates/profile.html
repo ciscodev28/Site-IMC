@@ -6,70 +6,66 @@ Perfil
 
 {% block content %}
 
-<h1>Meu Perfil</h1>
-<section class="content-card">
+<div class="profile-page">
 
-    <h2>Dados do usuário</h2>
+    <div class="page-title">
+        <h1>Meu Perfil</h1>
+        <p>Confira seus dados e acompanhe suas metas.</p>
+    </div>
 
-    <p>
-        <strong>Nome:</strong>
-        {{ nome }}
-    </p>
+    <section class="profile-card profile-data">
+        <h2>Dados do usuário</h2>
+        <div class="profile-data-grid">
+            <div>
+                <span>Nome</span>
+                <strong>{{ nome }}</strong>
+            </div>
+            <div>
+                <span>E-mail</span>
+                <strong>{{ email }}</strong>
+            </div>
+            <div>
+                <span>Idade</span>
+                <strong>{{ idade }} anos</strong>
+            </div>
+            <div>
+                <span>Peso</span>
+                <strong>{{ peso }} kg</strong>
+            </div>
+            <div>
+                <span>Altura</span>
+                <strong>{{ altura }} m</strong>
+            </div>
+        </div>
+    </section>
 
-    <p>
-        <strong>E-mail:</strong>
-        {{ email }}
-    </p>
+    <section class="profile-card profile-purple">
+        <h2>Minhas metas</h2>
+        <ul>
+            <li>Melhorar a saúde</li>
+            <li>Manter uma rotina saudável</li>
+            <li>Acompanhar o IMC</li>
+        </ul>
+    </section>
+    <section class="profile-card profile-purple">
+        <h2>Calculadora de IMC</h2>
+        <p>
+            Calcule seu IMC utilizando seu peso e sua altura.
+        </p>
+        {% if peso and altura %}
+        <a
+            class="profile-button"
+            href="{{ url_for('imc', peso=peso, altura=altura) }}"
+        >
+            Calcular meu IMC
+        </a>
+        {% else %}
+        <p>
+            Para calcular seu IMC, informe seu peso e sua altura no login.
+        </p>
+        {% endif %}
 
-    <p>
-        <strong>Idade:</strong>
-        {{ idade }} anos
-    </p>
-
-    <p>
-        <strong>Peso:</strong>
-        {{ peso }} kg
-    </p>
-
-    <p>
-        <strong>Altura:</strong>
-        {{ altura }} m
-    </p>
-
-</section>
-
-
-<section class="content-card">
-
-    <h2>Minhas metas</h2>
-
-    <ul style="color:white">
-        <li>Melhorar a saúde</li>
-        <li>Manter uma rotina saudável</li>
-        <li>Acompanhar o IMC</li>
-    </ul>
-
-</section>
-
-
-<section class="content-card">
-
-    <h2>Calculadora de IMC</h2>
-
-    <p>
-        Calcule seu IMC utilizando seu peso e sua altura.
-    </p>
-
-    {% if peso and altura %}
-    <a href="{{ url_for('imc', peso=peso, altura=altura) }}">
-        Calcular meu IMC
-    </a>
-    {% else %}
-    <p>
-        Para calcular seu IMC, informe seu peso e sua altura no login.
-    </p>
-
-    {% endif %}
-</section>
+    </section>
+</div>
 
 {% endblock %}

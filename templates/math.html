@@ -1,23 +1,26 @@
 {% extends "base.html" %}
 
 {% block title %}
-Math
+Calculadora
 {% endblock %}
 
-{%block content%}
+{% block content %}
 
-<body class="alin">
+<div class="math-page">
+    <div class="math-card">
+        <h1>Resultado da Calculadora</h1>
+        <p class="math-operacao">
+            Operação: <strong>{{ nome_operacao }}</strong>
+        </p>
+        <div class="math-resultado">
+            {{ a }} {{ simbolo }} {{ b }}
+            <span>=</span>
+            {{ resultado }}
+        </div>
+        <a class="math-voltar" href="{{ url_for('inicio') }}">
+            Voltar para o Início
+        </a>
+    </div>
+</div>
 
- 
- <h1> Resultado da Calculadora</h1>
-
- <p> Operação : {{nome_operacao}} </p>
-
- <h2>
-    {{ a }} {{simbolo}} {{ b }} = {{resultado}}
- </h2>
-
- <a href="{{ url_for ('inicio')}}">Voltar para o Início</a>
-</body>
-
-{%endblock%}
+{% endblock %}

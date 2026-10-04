@@ -125,6 +125,7 @@ def imc(peso, altura):
 
     imc_calculado = peso / (altura ** 2)
 
+
     # =========================
     # FAIXAS DE PESO
     # =========================
@@ -134,39 +135,53 @@ def imc(peso, altura):
     peso_sobrepeso = 25 * (altura ** 2)
     peso_obesidade = 30 * (altura ** 2)
 
+
     # =========================
     # CLASSIFICAÇÃO DO IMC
     # =========================
 
     if imc_calculado < 18.5:
-        classificacao = "Magreza"
+
+        classificacao = "Abaixo do peso"
 
     elif imc_calculado < 25:
+
         classificacao = "Normal"
 
     elif imc_calculado < 30:
+
         classificacao = "Sobrepeso"
 
     else:
+
         classificacao = "Obesidade"
+
 
     # =========================
     # POSIÇÃO DA BOLINHA
     # =========================
 
-    inicio = peso_minimo
-    fim = peso_obesidade
+    # A régua representa aproximadamente
+    # IMC de 15 até 35
 
-    if peso <= inicio:
+    imc_minimo_barra = 15
+    imc_maximo_barra = 35
+
+    if imc_calculado <= imc_minimo_barra:
+
         posicao_barra = 0
 
-    elif peso >= fim:
+    elif imc_calculado >= imc_maximo_barra:
+
         posicao_barra = 100
 
     else:
+
         posicao_barra = (
-            (peso - inicio) / (fim - inicio)
+            (imc_calculado - imc_minimo_barra)
+            / (imc_maximo_barra - imc_minimo_barra)
         ) * 100
+
 
     # =========================
     # GORDURA CORPORAL
@@ -186,11 +201,13 @@ def imc(peso, altura):
             )
 
         else:
+
             percentual_gordura = (
                 1.20 * imc_calculado
                 + 0.23 * idade
                 - 5.4
             )
+
 
     # =========================
     # CLASSIFICAÇÃO DA GORDURA
@@ -201,40 +218,53 @@ def imc(peso, altura):
         if sexo == "masculino":
 
             if percentual_gordura < 6:
+
                 classificacao_gordura = "Essencial"
 
             elif percentual_gordura < 14:
+
                 classificacao_gordura = "Atlético"
 
             elif percentual_gordura < 18:
+
                 classificacao_gordura = "Fitness"
 
             elif percentual_gordura < 25:
+
                 classificacao_gordura = "Aceitável"
 
             else:
+
                 classificacao_gordura = "Obesidade"
+
         else:
+
             if percentual_gordura < 14:
+
                 classificacao_gordura = "Essencial"
 
             elif percentual_gordura < 21:
+
                 classificacao_gordura = "Atlético"
 
             elif percentual_gordura < 25:
+
                 classificacao_gordura = "Fitness"
 
             elif percentual_gordura < 32:
+
                 classificacao_gordura = "Aceitável"
 
             else:
+
                 classificacao_gordura = "Obesidade"
+
 
     # =========================
     # RECOMENDAÇÃO
     # =========================
 
-    if classificacao == "Magreza":
+    if classificacao == "Abaixo do peso":
 
         recomendacao = (
             "Para esta classificação, o projeto recomenda: "
@@ -262,6 +292,7 @@ def imc(peso, altura):
             "de saúde para uma avaliação individualizada."
         )
 
+
     # =========================
     # ENVIAR PARA O HTML
     # =========================
@@ -283,7 +314,6 @@ def imc(peso, altura):
         classificacao_gordura=classificacao_gordura,
         recomendacao=recomendacao
     )
-
 @app.route("/imc-novo")
 def imc_novo():
 
