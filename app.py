@@ -1,6 +1,108 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, session
+from werkzeug.security import generate_password_hash, check_password_hash
+from dotenv import load_dotenv
+from datetime import datetime
+from functools import wraps
+import json
+import os
 
 app = Flask(__name__)
+
+# Carregar variáveis do arquivo .env
+load_dotenv()
+
+# Chave secreta para assinatura das sessões
+app.secret_key = os.getenv("SECRET_KEY")
+
+# caminho do bando de dados
+DATABASE = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)),
+    "data",
+    "database.json"
+)
+
+# inicializar o banco de dados
+def inicializar_banco():
+
+    #criar a pasta data caso não exista
+    os.makedirs(os.path.dirname(DATABASE), exist_ok=True)
+
+    #criar o arquivo caso não exista
+    if not os.path.exists(DATABASE):
+        with open(DATABASE, "w", encoding="utf-8") as arquivo:
+            json.dump([], arquivo, ensure_ascii=False, indent=4)
+
+# executar inicialização
+inicializar_banco()
+
+# carregar usuários do banco de dados
+
+def carregar_usuarios():
+    with open(DATABASE, "r", encoding="utf-8")as arquivo:
+        usuarios = json.load(arquivo)
+    return usuarios 
+
+
+# Salvar usuários no banco de dados
+def salvar_usuarios(usuarios):
+
+    with open(DATABASE, "w", encoding="utf-8") as arquivo:
+
+        json.dump(
+            usuarios,
+            arquivo,
+            ensure_ascii=False,
+            indent=4
+        )
+
+
+# Cadastrar novo usuário
+def criar_usuario(nome, email, senha):
+
+    usuarios = carregar_usuarios()
+
+    # Limpar e padronizar os dados
+    nome = nome.strip()
+    email = email.strip().lower()
+
+    # Verificar campos obrigatórios
+    if not nome or not email or not senha:
+        raise ValueError("Todos os campos são obrigatórios.")
+
+    # Verificar se o e-mail já está cadastrado
+    for usuario in usuarios:
+
+        if usuario["email"].lower() == email:
+            raise ValueError("Este e-mail já está cadastrado.")
+
+    # Gerar ID automaticamente
+    if usuarios:
+        novo_id = max(usuario["id"] for usuario in usuarios) + 1
+    else:
+        novo_id = 1
+
+    # Criar registro do usuário
+    novo_usuario = {
+        "id": novo_id,
+        "nome": nome,
+        "email": email,
+        "senha_hash": generate_password_hash(
+            senha,
+            method="pbkdf2:sha256"
+        ),
+        "foto_perfil": None,
+        "data_cadastro": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "funcao": "comum",
+        "excluido": False
+    }
+
+    # Adicionar usuário à lista
+    usuarios.append(novo_usuario)
+
+    # Salvar alterações
+    salvar_usuarios(usuarios)
+
+    return novo_usuario
 
 @app.route("/")
 def inicio():
