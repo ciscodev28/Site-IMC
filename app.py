@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
 from datetime import datetime
@@ -21,13 +21,11 @@ DATABASE = os.path.join(
     "database.json"
 )
 
-# inicializar o banco de dados
 def inicializar_banco():
 
     #criar a pasta data caso não exista
     os.makedirs(os.path.dirname(DATABASE), exist_ok=True)
 
-    #criar o arquivo caso não exista
     if not os.path.exists(DATABASE):
         with open(DATABASE, "w", encoding="utf-8") as arquivo:
             json.dump([], arquivo, ensure_ascii=False, indent=4)
@@ -35,7 +33,6 @@ def inicializar_banco():
 # executar inicialização
 inicializar_banco()
 
-# carregar usuários do banco de dados
 
 def carregar_usuarios():
     with open(DATABASE, "r", encoding="utf-8")as arquivo:
@@ -104,6 +101,31 @@ def criar_usuario(nome, email, senha):
 
     return novo_usuario
 
+# rota de cadastro
+@app.route("/cadastro", methods = ["GET", "POST"])
+def cadastro():
+
+    if request.method == "POST":
+
+        nome = request.form.get("nome", "")
+        email = request.form.get("email", "")
+        senha = request.form.get("senha", "")
+
+        try:
+            criar_usuario(nome, email, senha)
+
+            flash("Cadastro realizado com sucesso!", "success")
+
+            return redirect(url_for("login"))
+
+        except ValueError as erro:
+            return render_template(
+                "register.html",
+                mensagem_erro = str(erro)
+            )
+
+    return render_template("register.html")
+
 @app.route("/")
 def inicio():
     return render_template("index.html")
@@ -117,34 +139,57 @@ def login():
 
     if request.method == "POST":
 
-        usuario = request.form["usuario"]
-        senha = request.form["senha"]
+        email = request.form.get("email", "").strip().lower()
+        senha = request.form.get("senha", "")
 
-        if usuario == "admin" and senha == "1234":
+        usuarios = carregar_usuarios()
 
-            nome = request.form["nome"]
-            email = request.form["email"]
-            idade = request.form["idade"]
-            sexo = request.form["sexo"]
-            peso = request.form["peso"]
-            altura = request.form["altura"]
+        # procurar usuário pelo e-mail
+        usuario_encontrado = None 
+        
+        for usuario in usuarios:
 
-            return redirect(
-                url_for(
-                    "perfil",
-                    nome=nome,
-                    email=email,
-                    idade=idade,
-                    peso=peso,
-                    altura=altura,
-                    sexo=sexo
-                )
-            )
+            if usuario ["email"].lower() == email:
+                usuario_encontrado = usuario
+                break
 
+        # verificar se o usuário existe e não foi excluído 
+        if usuario_encontrado is None or usuario_encontrado["excluido"]:
+            flash("E-mail ou senha incorretos.", "error")
+            return redirect(url_for("login"))
+
+        # verificar a senha
+        if check_password_hash(
+            usuario_encontrado["senha_hash"],
+            senha
+        ):
+           # criar sessão
+           session.clear()
+
+           session["usuario_id"] = usuario_encontrado["id"]
+           session["usuario_nome"] = usuario_encontrado["nome"]
+           session["usuario_funcao"] = usuario_encontrado["funcao"]
+
+           flash("Login realizado com sucesso!", "success")
+
+           return redirect(url_for("perfil"))
+        
         else:
-            return "Usuário ou senha incorretos."
+
+            flash("E-mail ou senha incorretos.", "error")
+            return redirect(url_for("login"))
 
     return render_template("login.html")
+
+# encerrar sessão
+@app.route("/logout")
+def logout():
+
+    session.clear()
+
+    flash("Você saiu da sua conta.", "success")
+
+    return redirect(url_for("login"))
 
 @app.route("/profile")
 def perfil():
