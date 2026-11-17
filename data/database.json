@@ -1,1 +1,33 @@
-[]
+
+[
+    {
+        "id": 1,
+        "nome": "Usuario Teste",
+        "email": "teste@example.com",
+        "senha_hash": "pbkdf2:sha256:1000000$kL1MN6yyDZM03Vem$ebd6db4cc98a040f09a4a39be75503921088e34a12a89b3b253965467764f019",
+        "foto_perfil": null,
+        "data_cadastro": "2026-11-17 18:39:36",
+        "funcao": "admin",
+        "excluido": false
+    },
+    {
+        "id": 2,
+        "nome": "Usuario Temporario",
+        "email": "temporario@example.com",
+        "senha_hash": "pbkdf2:sha256:1000000$KSOWOnUd3kLT4RcN$933b58634c57ae95bf4066ea681cec3aff597c5f15b18d1d34ceaa16bf64c0d7",
+        "foto_perfil": null,
+        "data_cadastro": "2026-11-17 19:40:26",
+        "funcao": "comum",
+        "excluido": true
+    },
+    {
+        "id": 3,
+        "nome": "Usuario Comum",
+        "email": "comum_teste@example.com",
+        "senha_hash": "pbkdf2:sha256:1000000$B6fLZLPjX1azdMSu$bc85f68a6f062749a29ef32be0286b98e8a8d9ef2874e870eb84cc339280e4b9",
+        "foto_perfil": null,
+        "data_cadastro": "2026-11-17 19:41:54",
+        "funcao": "comum",
+        "excluido": false
+    }
+]
