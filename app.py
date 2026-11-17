@@ -1,6 +1,77 @@
-from flask import Flask, render_template, request, redirect, url_for
+
+import os
+import json
+
+from datetime import datetime
+from functools import wraps
+
+from flask import (
+    Flask, render_template, request,
+    redirect, url_for, session, flash, abort
+)
+
+from werkzeug.security import (
+    generate_password_hash,
+    check_password_hash
+)
+
+from dotenv import load_dotenv
+
+
+# Carrega as configurações do arquivo .env
+load_dotenv()
 
 app = Flask(__name__)
+
+app.secret_key = os.getenv("SECRET_KEY")
+
+if not app.secret_key:
+    raise RuntimeError("Configure a SECRET_KEY no arquivo .env")
+
+
+# Caminho do banco de dados
+ARQUIVO_BANCO = os.path.join(
+    os.path.dirname(__file__),
+    "data",
+    "database.json"
+)
+
+# Inicializa o banco de dados
+def inicializar_banco():
+
+    os.makedirs(os.path.dirname(ARQUIVO_BANCO), exist_ok=True)
+
+    if not os.path.exists(ARQUIVO_BANCO):
+
+        with open(ARQUIVO_BANCO, "w", encoding="utf-8") as arquivo:
+            json.dump([], arquivo, ensure_ascii=False, indent=4)
+
+
+# Carrega os usuários cadastrados
+def carregar_usuarios():
+
+    inicializar_banco()
+
+    with open(ARQUIVO_BANCO, "r", encoding="utf-8") as arquivo:
+        return json.load(arquivo)
+
+
+# Salva os usuários no arquivo JSON
+def salvar_usuarios(usuarios):
+
+    with open(ARQUIVO_BANCO, "w", encoding="utf-8") as arquivo:
+
+        json.dump(
+            usuarios,
+            arquivo,
+            ensure_ascii=False,
+            indent=4
+        )
+
+
+# Inicializa o banco ao executar o programa
+inicializar_banco()
+
 
 @app.route("/")
 def inicio():
