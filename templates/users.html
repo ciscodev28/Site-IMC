@@ -1,0 +1,121 @@
+
+<div class="users-table-container" id="lista-usuarios">
+
+    <table class="users-table">
+
+        <thead>
+
+            <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>E-mail</th>
+                <th>Função</th>
+                <th>Situação</th>
+                <th>Ações</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            {% for usuario in usuarios %}
+
+            <tr>
+
+                <td>#{{ usuario.id }}</td>
+
+                <td>
+                    <strong>{{ usuario.nome }}</strong>
+                </td>
+
+                <td>{{ usuario.email }}</td>
+
+                <td>
+                    <span class="role-badge">
+                        {{ "Administrador" if usuario.funcao == "admin" else "Comum" }}
+                    </span>
+                </td>
+
+                <td>
+
+                    {% if usuario.excluido %}
+
+                        <span class="status-badge status-deleted">
+                            Excluído
+                        </span>
+
+                    {% else %}
+
+                        <span class="status-badge status-active">
+                            Ativo
+                        </span>
+
+                    {% endif %}
+
+                </td>
+
+                <td>
+
+                    <div class="table-actions">
+
+                        {% if not usuario.excluido %}
+
+                            <a
+                                href="{{ url_for('rota_editar_usuario_admin', usuario_id=usuario.id) }}"
+                                class="action-edit"
+                            >
+                                Editar
+                            </a>
+
+                            {% if usuario.id != session.get('user_id') %}
+
+                                <form
+                                    action="{{ url_for('rota_excluir_usuario', usuario_id=usuario.id) }}"
+                                    method="POST"
+                                    onsubmit="return confirm('Deseja desativar este usuário?')"
+                                >
+
+                                    <button type="submit" class="action-delete">
+                                        Excluir
+                                    </button>
+
+                                </form>
+
+                            {% endif %}
+
+                        {% else %}
+
+                            <form
+                                action="{{ url_for('rota_reativar_usuario', usuario_id=usuario.id) }}"
+                                method="POST"
+                            >
+
+                                <button type="submit" class="action-reactivate">
+                                    Reativar
+                                </button>
+
+                            </form>
+
+                        {% endif %}
+
+                    </div>
+
+                </td>
+
+            </tr>
+
+            {% else %}
+
+            <tr>
+                <td colspan="6" class="empty-users">
+                    Nenhum usuário encontrado.
+                </td>
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>

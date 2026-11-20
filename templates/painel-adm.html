@@ -1,0 +1,146 @@
+
+{% extends "base.html" %}
+
+{% block title %}
+Painel Administrativo
+{% endblock %}
+
+{% block content %}
+
+<div class="admin-page">
+
+    <div class="admin-header">
+
+        <div>
+            <span class="auth-tag">GERENCIAMENTO</span>
+            <h1>Painel Administrativo</h1>
+            <p>Gerencie os usuários do Portal Saúde & Bem-Estar.</p>
+        </div>
+
+        <a href="{{ url_for('logout') }}" class="btn-secondary">
+            Sair do painel
+        </a>
+
+    </div>
+
+    {% with mensagens = get_flashed_messages(with_categories=true) %}
+        {% for categoria, mensagem in mensagens %}
+            <div class="alert alert-{{ categoria }}">
+                {{ mensagem }}
+            </div>
+        {% endfor %}
+    {% endwith %}
+
+    <section class="admin-stats">
+
+        <div class="stat-card">
+            <span>Total de usuários</span>
+            <strong>{{ estatisticas.total }}</strong>
+            <small>Contas registradas</small>
+        </div>
+
+        <div class="stat-card stat-active">
+            <span>Usuários ativos</span>
+            <strong>{{ estatisticas.ativos }}</strong>
+            <small>Contas em funcionamento</small>
+        </div>
+
+        <div class="stat-card stat-disabled">
+            <span>Usuários excluídos</span>
+            <strong>{{ estatisticas.excluidos }}</strong>
+            <small>Contas desativadas</small>
+        </div>
+
+        <div class="stat-card">
+            <span>Administradores</span>
+            <strong>{{ estatisticas.administradores }}</strong>
+            <small>Contas administrativas ativas</small>
+        </div>
+
+    </section>
+
+    <section class="admin-card">
+
+        <div class="admin-section-heading">
+            <div>
+                <h2>Adicionar usuário</h2>
+                <p>Cadastre uma nova conta pelo painel.</p>
+            </div>
+        </div>
+
+        <form
+            action="{{ url_for('rota_criar_usuario_admin') }}"
+            method="POST"
+            class="admin-create-form"
+        >
+
+            <div class="form-group">
+                <label for="nome">Nome</label>
+                <input
+                    type="text"
+                    id="nome"
+                    name="nome"
+                    placeholder="Nome completo"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="email">E-mail</label>
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    placeholder="E-mail"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="senha">Senha</label>
+                <input
+                    type="password"
+                    id="senha"
+                    name="senha"
+                    placeholder="Senha"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="funcao">Função</label>
+
+                <select id="funcao" name="funcao">
+                    <option value="comum">Usuário comum</option>
+                    <option value="admin">Administrador</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn-primary">
+                Criar usuário
+            </button>
+
+        </form>
+
+    </section>
+
+    <section class="admin-card">
+
+        <div class="admin-section-heading">
+            <div>
+                <h2>Gerenciamento de usuários</h2>
+                <p>Consulte e gerencie todas as contas cadastradas.</p>
+            </div>
+
+            <a href="#lista-usuarios" class="admin-shortcut">
+                Ver usuários
+            </a>
+        </div>
+
+        {% include "users.html" %}
+
+    </section>
+
+</div>
+
+{% endblock %}

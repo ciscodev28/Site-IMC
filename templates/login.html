@@ -1,3 +1,4 @@
+
 {% extends "base.html" %}
 
 {% block title %}
@@ -6,126 +7,96 @@ Login
 
 {% block content %}
 
-<div class="login-page">
-
-    <div class="login-card">
-
-        <div class="login-header">
-            <h1>Login</h1>
-            <p>Entre ou cadastre seus dados para acessar seu perfil.</p>
+<div class="auth-page">
+    <div class="auth-card">
+        <div class="auth-header">
+            <span class="auth-tag">SAÚDE E BEM-ESTAR</span>
+            <h1>Bem-vindo de volta!</h1>
+            <p>Entre com seus dados para acessar sua conta.</p>
         </div>
-
+        {% if mensagem_erro %}
+            <div class="alert alert-error">
+                {{ mensagem_erro }}
+            </div>
+        {% endif %}
+        {% with mensagens = get_flashed_messages(with_categories=true) %}
+            {% for categoria, mensagem in mensagens %}
+                <div class="alert alert-{{ categoria }}">
+                    {{ mensagem }}
+                </div>
+            {% endfor %}
+        {% endwith %}
         <form action="{{ url_for('login') }}" method="POST">
-
-            <div class="login-section">
-                <h2>Acesso</h2>
-
-                <div class="form-group">
-                    <label for="usuario">Usuário</label>
-                    <input type="text" id="usuario" name="usuario" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="senha">Senha</label>
-
-                    <div class="password-field">
-                        <input type="password" id="senha" name="senha" required>
-
-                        <button type="button" id="mostrarSenha">
-                            Mostrar
-                        </button>
-                    </div>
-
-                    <p id="avisoCapsLock" class="caps-warning">
-                        Caps Lock está ativado.
-                    </p>
-                </div>
+            <div class="form-group">
+                <label for="email">E-mail</label>
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    value="{{ email or '' }}"
+                    placeholder="Digite seu e-mail"
+                    required
+                >
             </div>
-
-
-            <div class="login-section">
-                <h2>Dados do perfil</h2>
-
-                <div class="profile-form-grid">
-
-                    <div class="form-group">
-                        <label for="nome">Nome</label>
-                        <input type="text" id="nome" name="nome" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="email">E-mail</label>
-                        <input type="email" id="email" name="email" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="idade">Idade</label>
-                        <input type="number" id="idade" name="idade" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="sexo">Sexo</label>
-
-                        <select name="sexo" id="sexo" required>
-                            <option value="">Selecione</option>
-                            <option value="masculino">Masculino</option>
-                            <option value="feminino">Feminino</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="peso">Peso (kg)</label>
-                        <input type="number" id="peso" name="peso" step="any" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="altura">Altura (m)</label>
-                        <input type="number" id="altura" name="altura" step="any" required>
-                    </div>
-
+            <div class="form-group">
+                <label for="senha">Senha</label>
+                <div class="password-field">
+                    <input
+                        type="password"
+                        id="senha"
+                        name="senha"
+                        placeholder="Digite sua senha"
+                        required
+                    >
+                    <button
+                        type="button"
+                        id="mostrarSenha"
+                    >
+                        Mostrar
+                    </button>
                 </div>
+                <p id="avisoCapsLock" class="caps-warning">
+                    Caps Lock está ativado.
+                </p>
             </div>
-
-            <button type="submit" class="btn-primary login-button">
+            <button type="submit" class="btn-primary auth-button">
                 Entrar
             </button>
-
         </form>
-
+        <div class="auth-footer">
+            Ainda não possui uma conta?
+            <a href="{{ url_for('cadastro') }}">Cadastre-se</a>
+        </div>
     </div>
-
 </div>
-
-
 <script>
 
-    const senha = document.getElementById("senha");
-    const botaoSenha = document.getElementById("mostrarSenha");
-    const avisoCapsLock = document.getElementById("avisoCapsLock");
+const senha = document.getElementById("senha");
+const botaoSenha = document.getElementById("mostrarSenha");
+const avisoCapsLock = document.getElementById("avisoCapsLock");
 
-    botaoSenha.addEventListener("click", function() {
+botaoSenha.addEventListener("click", function() {
 
-        if (senha.type === "password") {
-            senha.type = "text";
-            botaoSenha.textContent = "Ocultar";
-        } else {
-            senha.type = "password";
-            botaoSenha.textContent = "Mostrar";
-        }
+    if (senha.type === "password") {
+        senha.type = "text";
+        botaoSenha.textContent = "Ocultar";
+    } else {
+        senha.type = "password";
+        botaoSenha.textContent = "Mostrar";
+    }
+});
+function verificarCapsLock(event) {
 
-    });
+    const ativado = event.getModifierState("CapsLock");
+    avisoCapsLock.style.display = ativado ? "block" : "none";
 
-
-    senha.addEventListener("keydown", function(event) {
-
-        if (event.getModifierState("CapsLock")) {
-            avisoCapsLock.style.display = "block";
-        } else {
-            avisoCapsLock.style.display = "none";
-        }
-
-    });
-
+}
+senha.addEventListener("keydown", verificarCapsLock);
+senha.addEventListener("keyup", verificarCapsLock);
+senha.addEventListener("focus", verificarCapsLock);
+senha.addEventListener("blur", function() {
+    avisoCapsLock.style.display = "none";
+});
 </script>
 
 {% endblock %}

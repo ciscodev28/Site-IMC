@@ -1,0 +1,147 @@
+
+{% extends "base.html" %}
+
+{% block title %}
+Editar usuário
+{% endblock %}
+
+{% block content %}
+
+<div class="auth-page">
+
+    <div class="auth-card edit-card">
+
+        <div class="auth-header">
+            <span class="auth-tag">GERENCIAMENTO DE CONTA</span>
+
+            <h1>
+                {{ "Editar usuário" if admin_editando else "Editar meu perfil" }}
+            </h1>
+
+            <p>Atualize suas informações abaixo.</p>
+        </div>
+
+        {% if mensagem_erro %}
+            <div class="alert alert-error">
+                {{ mensagem_erro }}
+            </div>
+        {% endif %}
+
+        {% with mensagens = get_flashed_messages(with_categories=true) %}
+            {% for categoria, mensagem in mensagens %}
+                <div class="alert alert-{{ categoria }}">
+                    {{ mensagem }}
+                </div>
+            {% endfor %}
+        {% endwith %}
+
+        <form
+            action="{% if admin_editando %}{{ url_for('rota_editar_usuario_admin', usuario_id=usuario.id) }}{% else %}{{ url_for('editar_perfil') }}{% endif %}"
+            method="POST"
+        >
+
+            <div class="form-group">
+                <label for="nome">Nome completo</label>
+
+                <input
+                    type="text"
+                    id="nome"
+                    name="nome"
+                    value="{{ usuario.nome }}"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="email">E-mail</label>
+
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    value="{{ usuario.email }}"
+                    required
+                >
+            </div>
+
+            {% if admin_editando %}
+
+            <div class="form-group">
+                <label for="funcao">Função do usuário</label>
+
+                <select id="funcao" name="funcao" required>
+
+                    <option value="comum"
+                        {% if usuario.funcao == "comum" %}selected{% endif %}>
+                        Usuário comum
+                    </option>
+
+                    <option value="admin"
+                        {% if usuario.funcao == "admin" %}selected{% endif %}>
+                        Administrador
+                    </option>
+
+                </select>
+            </div>
+
+            {% else %}
+
+            <div class="form-group">
+                <label>Função da conta</label>
+
+                <input
+                    type="text"
+                    value="Usuário comum ou administrador"
+                    disabled
+                >
+                <small class="form-help">
+                    A função da conta não pode ser alterada nesta tela.
+                </small>
+            </div>
+
+            {% endif %}
+
+            <div class="form-group">
+
+                <label for="senha">Nova senha</label>
+
+                <input
+                    type="password"
+                    id="senha"
+                    name="senha"
+                    placeholder="Deixe vazio para manter a senha atual"
+                >
+
+                <small class="form-help">
+                    Preencha somente se desejar alterar a senha.
+                </small>
+
+            </div>
+
+            <button type="submit" class="btn-primary auth-button">
+                Salvar alterações
+            </button>
+
+            {% if admin_editando %}
+
+                <a href="{{ url_for('painel_admin') }}"
+                   class="btn-secondary cancel-button">
+                    Cancelar
+                </a>
+
+            {% else %}
+
+                <a href="{{ url_for('perfil') }}"
+                   class="btn-secondary cancel-button">
+                    Cancelar
+                </a>
+
+            {% endif %}
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -38,5 +38,15 @@
         "data_cadastro": "2026-11-18 17:29:01",
         "funcao": "comum",
         "excluido": false
+    },
+    {
+        "id": 5,
+        "nome": "Barreto",
+        "email": "barreto@gmail.com",
+        "senha_hash": "pbkdf2:sha256:1000000$cgNo4j89WQ1Bm4r7$93a97d881eacb29fcf42ae0bb5c11c6535a162dd5679e3f0348090d17ac4f905",
+        "foto_perfil": "static/images/default_avatar.png",
+        "data_cadastro": "2026-11-20 20:31:41",
+        "funcao": "comum",
+        "excluido": false
     }
 ]

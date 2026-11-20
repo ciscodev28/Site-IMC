@@ -1,7 +1,8 @@
+
 {% extends "base.html" %}
 
 {% block title %}
-Perfil
+Meu Perfil
 {% endblock %}
 
 {% block content %}
@@ -10,62 +11,127 @@ Perfil
 
     <div class="page-title">
         <h1>Meu Perfil</h1>
-        <p>Confira seus dados e acompanhe suas metas.</p>
+        <p>Gerencie suas informações pessoais.</p>
     </div>
 
-    <section class="profile-card profile-data">
-        <h2>Dados do usuário</h2>
+    {% with mensagens = get_flashed_messages(with_categories=true) %}
+        {% for categoria, mensagem in mensagens %}
+            <div class="alert alert-{{ categoria }}">
+                {{ mensagem }}
+            </div>
+        {% endfor %}
+    {% endwith %}
+
+    <section class="profile-card profile-main">
+
+    
+        <div class="profile-avatar">
+
+            <img
+                src="{{ url_for('static', filename=(foto_perfil|default('images/default-avatar.png', true)|replace('static/', ''))) }}"
+                alt="Foto de perfil"
+            >
+
+        </div>
+
+
+        <div class="profile-main-info">
+
+            <h2>{{ nome }}</h2>
+
+            <p>{{ email }}</p>
+
+            <span class="role-badge">
+                {{ "Administrador" if funcao == "admin" else "Usuário comum" }}
+            </span>
+
+        </div>
+
+    </section>
+
+    <section class="profile-card">
+
+        <h2>Informações da conta</h2>
+
         <div class="profile-data-grid">
+
             <div>
-                <span>Nome</span>
+                <span>Nome completo</span>
                 <strong>{{ nome }}</strong>
             </div>
+
             <div>
                 <span>E-mail</span>
                 <strong>{{ email }}</strong>
             </div>
+
             <div>
-                <span>Idade</span>
-                <strong>{{ idade }} anos</strong>
+                <span>Função</span>
+                <strong>
+                    {{ "Administrador" if funcao == "admin" else "Usuário comum" }}
+                </strong>
             </div>
+
             <div>
-                <span>Peso</span>
-                <strong>{{ peso }} kg</strong>
+                <span>Data de cadastro</span>
+                <strong>
+                    {{ data_cadastro if data_cadastro else "Não disponível" }}
+                </strong>
             </div>
-            <div>
-                <span>Altura</span>
-                <strong>{{ altura }} m</strong>
-            </div>
+
         </div>
+
+        <a href="{{ url_for('editar_perfil') }}" class="btn-primary profile-button">
+            Editar perfil
+        </a>
+
     </section>
 
     <section class="profile-card profile-purple">
+
         <h2>Minhas metas</h2>
+
         <ul>
             <li>Melhorar a saúde</li>
             <li>Manter uma rotina saudável</li>
             <li>Acompanhar o IMC</li>
         </ul>
-    </section>
-    <section class="profile-card profile-purple">
-        <h2>Calculadora de IMC</h2>
-        <p>
-            Calcule seu IMC utilizando seu peso e sua altura.
-        </p>
-        {% if peso and altura %}
-        <a
-            class="profile-button"
-            href="{{ url_for('imc', peso=peso, altura=altura) }}"
-        >
-            Calcular meu IMC
-        </a>
-        {% else %}
-        <p>
-            Para calcular seu IMC, informe seu peso e sua altura no login.
-        </p>
-        {% endif %}
 
     </section>
+
+    {% if funcao == "admin" %}
+
+    <section class="profile-card">
+
+        <h2>Administração</h2>
+
+        <p>Acesse o painel para gerenciar os usuários cadastrados.</p>
+
+        <a href="{{ url_for('painel_admin') }}" class="btn-primary profile-button">
+            Acessar painel administrativo
+        </a>
+
+    </section>
+
+    {% endif %}
+
+    <section class="profile-actions">
+
+        <a href="{{ url_for('logout') }}" class="btn-secondary">
+            Sair da conta
+        </a>
+
+        <form action="{{ url_for('excluir_propria_conta') }}" method="POST"
+              onsubmit="return confirm('Deseja realmente desativar sua conta?')">
+
+            <button type="submit" class="btn-danger">
+                Desativar minha conta
+            </button>
+
+        </form>
+
+    </section>
+
 </div>
 
 {% endblock %}

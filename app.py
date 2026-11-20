@@ -459,6 +459,7 @@ def logout():
 # PERFIL E EDICAO DA PROPRIA CONTA
 # ============================================================
 
+
 @app.route("/profile")
 @login_required
 def perfil():
@@ -469,7 +470,8 @@ def perfil():
         nome=usuario["nome"],
         email=usuario["email"],
         funcao=usuario["funcao"],
-        foto_perfil=usuario.get("foto_perfil", FOTO_PADRAO)
+        foto_perfil=usuario.get("foto_perfil", FOTO_PADRAO),
+        data_cadastro=usuario.get("data_cadastro")
     )
 
 
