@@ -93,7 +93,12 @@ function verificarCapsLock(event) {
 }
 senha.addEventListener("keydown", verificarCapsLock);
 senha.addEventListener("keyup", verificarCapsLock);
-senha.addEventListener("focus", verificarCapsLock);
+senha.addEventListener("focus", function(event) {
+    if (event.getModifierState) {
+        verificarCapsLock(event);
+    }
+});
+
 senha.addEventListener("blur", function() {
     avisoCapsLock.style.display = "none";
 });

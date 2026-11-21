@@ -394,6 +394,15 @@ def cadastro():
         nome = request.form.get("nome", "")
         email = request.form.get("email", "")
         senha = request.form.get("senha", "")
+        confirmar_senha = request.form.get("confirmar_senha", "")
+
+        if senha != confirmar_senha:
+            return render_template(
+                "register.html",
+                mensagem_erro= "As senhas não coincidem",
+                nome= nome,
+                email= email
+            )
 
         # Cadastro publico nunca permite escolher funcao admin.
         try:
@@ -459,7 +468,6 @@ def logout():
 # PERFIL E EDICAO DA PROPRIA CONTA
 # ============================================================
 
-
 @app.route("/profile")
 @login_required
 def perfil():
@@ -471,7 +479,7 @@ def perfil():
         email=usuario["email"],
         funcao=usuario["funcao"],
         foto_perfil=usuario.get("foto_perfil", FOTO_PADRAO),
-        data_cadastro=usuario.get("data_cadastro")
+        data_cadastro= usuario.get("data_cadastro")
     )
 
 

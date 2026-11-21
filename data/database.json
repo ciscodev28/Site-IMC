@@ -48,5 +48,15 @@
         "data_cadastro": "2026-11-20 20:31:41",
         "funcao": "comum",
         "excluido": false
+    },
+    {
+        "id": 6,
+        "nome": "Francisco",
+        "email": "alguem@gmail.com",
+        "senha_hash": "pbkdf2:sha256:1000000$BqHGzoKkBnqQl28U$df8dd36b6cb80e36d69a340de5da26e1d03c0dbb7baba229ced857d3b0067840",
+        "foto_perfil": "static/images/default_avatar.png",
+        "data_cadastro": "2026-11-21 18:42:22",
+        "funcao": "comum",
+        "excluido": false
     }
 ]
