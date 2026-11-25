@@ -1742,3 +1742,17 @@ main {
     }
 
 }
+
+input[type="file"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background: #fff;
+    cursor: pointer;
+}
+
+input[type="file"]:focus {
+    outline: 2px solid #3d82d6;
+    outline-offset: 2px;
+}

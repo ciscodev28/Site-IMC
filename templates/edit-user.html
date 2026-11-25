@@ -91,7 +91,7 @@ Editar usuário
 
                 <input
                     type="text"
-                    value="Usuário comum ou administrador"
+                    value="{{ 'Administrador' if usuario.funcao == 'admin' else 'Usuario comum'}}"
                     disabled
                 >
                 <small class="form-help">
@@ -101,22 +101,54 @@ Editar usuário
 
             {% endif %}
 
-            <div class="form-group">
+            
+<div class="form-group">
 
-                <label for="senha">Nova senha</label>
+    <label for="senha">Nova senha</label>
 
-                <input
-                    type="password"
-                    id="senha"
-                    name="senha"
-                    placeholder="Deixe vazio para manter a senha atual"
-                >
+    <div class="password-field">
 
-                <small class="form-help">
-                    Preencha somente se desejar alterar a senha.
-                </small>
+        <input
+            type="password"
+            id="senha"
+            name="senha"
+            minlength="8"
+            placeholder="Deixe vazio para manter a senha atual"
+        >
 
-            </div>
+        <button
+            type="button"
+            onclick="alternarSenha()"
+        >
+            Mostrar
+        </button>
+
+    </div>
+
+    <small class="form-help">
+        Preencha somente se desejar alterar a senha.
+        Deixe vazio para manter a senha atual.
+    </small>
+
+</div>
+
+<script>
+function alternarSenha() {
+
+    const campo = document.getElementById("senha");
+    const botao = event.currentTarget;
+
+    if (campo.type === "password") {
+        campo.type = "text";
+        botao.textContent = "Ocultar";
+    } else {
+        campo.type = "password";
+        botao.textContent = "Mostrar";
+    }
+
+}
+</script>
+
 
             <button type="submit" class="btn-primary auth-button">
                 Salvar alterações
@@ -127,7 +159,7 @@ Editar usuário
                 <a href="{{ url_for('painel_admin') }}"
                    class="btn-secondary cancel-button">
                     Cancelar
-                </a>ma
+                </a>
 
             {% else %}
 

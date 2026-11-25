@@ -1,7 +1,9 @@
 import os
 import json
 import tempfile
+import uuid 
 
+from werkzeug.utils import secure_filename
 from datetime import datetime
 from functools import wraps
 
@@ -33,6 +35,49 @@ ARQUIVO_BANCO = os.path.join(
 )
 
 FOTO_PADRAO = "static/images/default_avatar.png"
+
+UPOLOAD_FOLDER = os.path.join(
+    app.root_path,
+    "static",
+    "uploads"
+)
+
+EXTENSOES_PERMITIDAS = (
+    "jpg",
+    "jpeg",
+    "png",
+    "webp"
+)
+
+app.config["MAX_CONTENT_LENGHT"] = 2 * 1024 * 1024
+
+os.makedirs(UPOLOAD_FOLDER, exist_ok= True)
+
+def salvar_foto_perfil(arquivo):
+
+    if not arquivo or not arquivo.filename:
+        return FOTO_PADRAO
+
+    nome_original = secure_filename(arquivo.filename)
+
+    if "." not in nome_original:
+        raise ValueError("Arquivo de imagem inválido.")
+
+    extensao = nome_original.rsplit(".", 1)[1].lower()
+
+    if extensao not in EXTENSOES_PERMITIDAS:
+        raise ValueError("Formato de imagem não permitido.")
+
+    nome_arquivo = f"{uuid.uuid4().hex}.{extensao}"
+
+    caminho = os.path.join(
+        UPOLOAD_FOLDER,
+        nome_arquivo
+    )
+
+    arquivo.save(caminho)
+
+    return f"static/uploads/{nome_arquivo}"
 
 
 # ============================================================
@@ -155,7 +200,7 @@ def contar_administradores_ativos(usuarios=None):
     )
 
 
-def criar_usuario(nome, email, senha, funcao="comum"):
+def criar_usuario(nome, email, senha, funcao="comum", foto_perfil= None):
     """Cria usuario; a funcao e comum por padrao."""
     usuarios = carregar_usuarios()
 
@@ -194,7 +239,7 @@ def criar_usuario(nome, email, senha, funcao="comum"):
             senha,
             method="pbkdf2:sha256"
         ),
-        "foto_perfil": FOTO_PADRAO,
+        "foto_perfil": foto_perfil or FOTO_PADRAO,
         "data_cadastro": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "funcao": funcao,
         "excluido": False
@@ -395,6 +440,7 @@ def cadastro():
         email = request.form.get("email", "")
         senha = request.form.get("senha", "")
         confirmar_senha = request.form.get("confirmar_senha", "")
+        arquivo_foto = request.files.get("foto_perfil")
 
         if senha != confirmar_senha:
             return render_template(
@@ -406,7 +452,12 @@ def cadastro():
 
         # Cadastro publico nunca permite escolher funcao admin.
         try:
-            criar_usuario(nome, email, senha, funcao="comum")
+            arquivo_foto = request.files.get("foto_perfil")
+
+            foto = salvar_foto_perfil(arquivo_foto)
+
+            criar_usuario(nome, email, senha, funcao="comum",foto_perfil = foto)
+            
             flash("Cadastro realizado com sucesso! Faca seu login.", "success")
             return redirect(url_for("login"))
         except ValueError as erro:
@@ -857,6 +908,4 @@ def imc_novo():
 # ============================================================
 
 if __name__ == "__main__":
-    # Em desenvolvimento local, mantenha debug=True.
-    # Antes de publicar o site, use debug=False.
     app.run(debug=True)
