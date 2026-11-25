@@ -58,5 +58,25 @@
         "data_cadastro": "2026-11-21 18:42:22",
         "funcao": "comum",
         "excluido": false
+    },
+    {
+        "id": 7,
+        "nome": "CriadorDUsite",
+        "email": "criadusite@gmail.com",
+        "senha_hash": "pbkdf2:sha256:1000000$IJQo2PTb2zTv1NGL$4a28970315787f6d6e660f459810305e3f843f6bf1446801186ec1931c9cd7a3",
+        "foto_perfil": "static/images/default_avatar.png",
+        "data_cadastro": "2026-11-25 20:41:54",
+        "funcao": "admin",
+        "excluido": false
+    },
+    {
+        "id": 8,
+        "nome": "Jotapê",
+        "email": "jota@gmail.com",
+        "senha_hash": "pbkdf2:sha256:1000000$WyJZsf8KyzDqODnD$d4a78e30ee1fcdbace648ae0c455a96243961c03fc77feb38c7c8ab0e1550bcc",
+        "foto_perfil": "static/uploads/ef0a9ee270a049b4bfee4941caaf0b58.png",
+        "data_cadastro": "2026-11-25 20:49:14",
+        "funcao": "comum",
+        "excluido": false
     }
 ]

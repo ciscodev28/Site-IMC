@@ -28,7 +28,7 @@ Meu Perfil
         <div class="profile-avatar">
 
             <img
-            src="{{ url_for('static', filename=(foto_perfil|default('static/images/default_avatar.png', true)|replace('static/', '')) }}"
+            src="{{ url_for('static', filename=(foto_perfil|default('static/images/default_avatar.png', true)|replace('static/', ''))) }}"
                 alt="Foto de perfil"
             >
 
