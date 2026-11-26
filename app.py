@@ -34,9 +34,9 @@ ARQUIVO_BANCO = os.path.join(
     "database.json"
 )
 
-FOTO_PADRAO = "static/images/default_avatar.png"
+FOTO_PADRAO = "static/images/default-avatar.png"
 
-UPOLOAD_FOLDER = os.path.join(
+UPLOAD_FOLDER = os.path.join(
     app.root_path,
     "static",
     "uploads"
@@ -49,14 +49,15 @@ EXTENSOES_PERMITIDAS = (
     "webp"
 )
 
-app.config["MAX_CONTENT_LENGHT"] = 2 * 1024 * 1024
+app.config["MAX_CONTENT_LENGTH"] = 2 * 1024 * 1024
 
-os.makedirs(UPOLOAD_FOLDER, exist_ok= True)
+os.makedirs(UPLOAD_FOLDER, exist_ok= True)
+
 
 def salvar_foto_perfil(arquivo):
 
     if not arquivo or not arquivo.filename:
-        return FOTO_PADRAO
+        return None
 
     nome_original = secure_filename(arquivo.filename)
 
@@ -71,14 +72,13 @@ def salvar_foto_perfil(arquivo):
     nome_arquivo = f"{uuid.uuid4().hex}.{extensao}"
 
     caminho = os.path.join(
-        UPOLOAD_FOLDER,
+        UPLOAD_FOLDER,
         nome_arquivo
     )
 
     arquivo.save(caminho)
 
     return f"static/uploads/{nome_arquivo}"
-
 
 # ============================================================
 # PERSISTENCIA DE DADOS
@@ -251,7 +251,7 @@ def criar_usuario(nome, email, senha, funcao="comum", foto_perfil= None):
     return novo_usuario
 
 
-def editar_usuario(usuario_id, nome, email, senha=None):
+def editar_usuario(usuario_id, nome, email, senha=None, foto_perfil=None):
     """Atualiza nome/e-mail e, opcionalmente, a senha."""
     usuarios = carregar_usuarios()
 
@@ -293,9 +293,12 @@ def editar_usuario(usuario_id, nome, email, senha=None):
             senha,
             method="pbkdf2:sha256"
         )
-
-    # data_cadastro, foto_perfil e funcao nao sao alterados nesta funcao.
+    
+    if foto_perfil:
+        usuario_alvo["foto_perfil"] = foto_perfil
+    
     salvar_usuarios(usuarios)
+
     return True
 
 
@@ -546,7 +549,13 @@ def editar_perfil():
         senha = request.form.get("senha", "")
 
         try:
-            editar_usuario(usuario_id, nome, email, senha)
+
+            foto = None
+
+            if arquivo_foto and arquivo_foto.filename:
+                foto = salvar_foto_perfil(arquivo_foto)
+
+            editar_usuario(usuario_id, nome, email, senha, foto_perfil = foto)
 
             usuario_atualizado = buscar_usuario_por_id(usuario_id)
             session["email"] = usuario_atualizado["email"]
@@ -555,6 +564,8 @@ def editar_perfil():
             return redirect(url_for("perfil"))
 
         except ValueError as erro:
+            usuario = buscar_usuario_por_id(usuario_id)
+
             return render_template(
                 "edit-user.html",
                 usuario=usuario,
@@ -642,19 +653,43 @@ def rota_criar_usuario_admin():
 )
 @admin_required
 def rota_editar_usuario_admin(usuario_id):
+    
+@app.route(
+    "/admin/editar-usuario/<int:usuario_id>",
+    methods=["GET", "POST"]
+)
+@admin_required
+def rota_editar_usuario_admin(usuario_id):
+
     usuario = buscar_usuario_por_id(usuario_id)
 
     if usuario is None or usuario.get("excluido", False):
         abort(404)
 
     if request.method == "POST":
+
         nome = request.form.get("nome", "")
         email = request.form.get("email", "")
         senha = request.form.get("senha", "")
         nova_funcao = request.form.get("funcao", usuario["funcao"])
 
+        arquivo_foto = request.files.get("foto_perfil")
+
         try:
-            editar_usuario(usuario_id, nome, email, senha)
+
+            foto = None
+
+            if arquivo_foto and arquivo_foto.filename:
+                foto = salvar_foto_perfil(arquivo_foto)
+
+            editar_usuario(
+                usuario_id,
+                nome,
+                email,
+                senha,
+                foto_perfil=foto
+            )
+
             alterar_funcao_usuario(
                 usuario_id,
                 nova_funcao,
@@ -662,10 +697,13 @@ def rota_editar_usuario_admin(usuario_id):
             )
 
             flash("Usuario atualizado com sucesso.", "success")
+
             return redirect(url_for("painel_admin"))
 
         except ValueError as erro:
+
             usuario = buscar_usuario_por_id(usuario_id)
+
             return render_template(
                 "edit-user.html",
                 usuario=usuario,
@@ -678,6 +716,7 @@ def rota_editar_usuario_admin(usuario_id):
         usuario=usuario,
         admin_editando=True
     )
+
 
 
 @app.route(

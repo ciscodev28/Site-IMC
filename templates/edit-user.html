@@ -38,6 +38,7 @@ Editar usuário
         <form
             action="{% if admin_editando %}{{ url_for('rota_editar_usuario_admin', usuario_id=usuario.id) }}{% else %}{{ url_for('editar_perfil') }}{% endif %}"
             method="POST"
+            enctype="multipart/form-data"
         >
 
             <div class="form-group">
@@ -64,91 +65,118 @@ Editar usuário
                 >
             </div>
 
+            {% if usuario.foto_perfil %}
+                <div class="form-group">
+                    <label>Imagem atual</label>
+
+                    <img
+                        src="{{ url_for('static', filename=usuario.foto_perfil|replace('static/', '')) }}"
+                        alt="Foto de perfil atual"
+                        width="120"
+                    >
+                </div>
+            {% endif %}
+
             {% if admin_editando %}
 
-            <div class="form-group">
-                <label for="funcao">Função do usuário</label>
+                <div class="form-group">
+                    <label for="funcao">Função do usuário</label>
 
-                <select id="funcao" name="funcao" required>
+                    <select id="funcao" name="funcao" required>
 
-                    <option value="comum"
-                        {% if usuario.funcao == "comum" %}selected{% endif %}>
-                        Usuário comum
-                    </option>
+                        <option value="comum"
+                            {% if usuario.funcao == "comum" %}selected{% endif %}>
+                            Usuário comum
+                        </option>
 
-                    <option value="admin"
-                        {% if usuario.funcao == "admin" %}selected{% endif %}>
-                        Administrador
-                    </option>
+                        <option value="admin"
+                            {% if usuario.funcao == "admin" %}selected{% endif %}>
+                            Administrador
+                        </option>
 
-                </select>
-            </div>
+                    </select>
+                </div>
 
             {% else %}
 
-            <div class="form-group">
-                <label>Função da conta</label>
+                <div class="form-group">
+                    <label>Função da conta</label>
 
-                <input
-                    type="text"
-                    value="{{ 'Administrador' if usuario.funcao == 'admin' else 'Usuario comum'}}"
-                    disabled
-                >
-                <small class="form-help">
-                    A função da conta não pode ser alterada nesta tela.
-                </small>
-            </div>
+                    <input
+                        type="text"
+                        value="{{ 'Administrador' if usuario.funcao == 'admin' else 'Usuario comum' }}"
+                        disabled
+                    >
+
+                    <small class="form-help">
+                        A função da conta não pode ser alterada nesta tela.
+                    </small>
+                </div>
 
             {% endif %}
 
-            
-<div class="form-group">
+            <div class="form-group">
+                <label for="foto_perfil">Foto de perfil</label>
 
-    <label for="senha">Nova senha</label>
+                <input
+                    type="file"
+                    id="foto_perfil"
+                    name="foto_perfil"
+                    accept=".jpg,.jpeg,.png,.webp"
+                >
 
-    <div class="password-field">
+                <small class="form-help">
+                    Selecione uma nova imagem para atualizar sua foto de perfil.
+                    Deixe vazio para manter a imagem atual.
+                </small>
+            </div>
 
-        <input
-            type="password"
-            id="senha"
-            name="senha"
-            minlength="8"
-            placeholder="Deixe vazio para manter a senha atual"
-        >
+            <div class="form-group">
 
-        <button
-            type="button"
-            onclick="alternarSenha()"
-        >
-            Mostrar
-        </button>
+                <label for="senha">Nova senha</label>
 
-    </div>
+                <div class="password-field">
 
-    <small class="form-help">
-        Preencha somente se desejar alterar a senha.
-        Deixe vazio para manter a senha atual.
-    </small>
+                    <input
+                        type="password"
+                        id="senha"
+                        name="senha"
+                        minlength="8"
+                        placeholder="Deixe vazio para manter a senha atual"
+                    >
 
-</div>
+                    <button
+                        type="button"
+                        onclick="alternarSenha()"
+                    >
+                        Mostrar
+                    </button>
 
-<script>
-function alternarSenha() {
+                </div>
 
-    const campo = document.getElementById("senha");
-    const botao = event.currentTarget;
+                <small class="form-help">
+                    Preencha somente se desejar alterar a senha.
+                    Deixe vazio para manter a senha atual.
+                </small>
 
-    if (campo.type === "password") {
-        campo.type = "text";
-        botao.textContent = "Ocultar";
-    } else {
-        campo.type = "password";
-        botao.textContent = "Mostrar";
-    }
+            </div>
 
-}
-</script>
+            <script>
+                function alternarSenha() {
 
+                    const campo = document.getElementById("senha");
+                    const botao = event.currentTarget;
+
+                    if (campo.type === "password") {
+                        campo.type = "text";
+                        botao.textContent = "Ocultar";
+                    } else {
+                        campo.type = "password";
+                        botao.textContent = "Mostrar";
+                    }
+
+                }
+            </script>
 
             <button type="submit" class="btn-primary auth-button">
                 Salvar alterações
