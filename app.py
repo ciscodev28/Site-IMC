@@ -51,7 +51,7 @@ EXTENSOES_PERMITIDAS = (
 
 app.config["MAX_CONTENT_LENGTH"] = 2 * 1024 * 1024
 
-os.makedirs(UPLOAD_FOLDER, exist_ok= True)
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 
 def salvar_foto_perfil(arquivo):
@@ -547,7 +547,7 @@ def editar_perfil():
         nome = request.form.get("nome", "")
         email = request.form.get("email", "")
         senha = request.form.get("senha", "")
-
+        arquivo_foto = request.files.gt("foto_pefil")
         try:
 
             foto = None
@@ -653,7 +653,61 @@ def rota_criar_usuario_admin():
 )
 @admin_required
 def rota_editar_usuario_admin(usuario_id):
+
+    usuario = buscar_usuario_por_id(usuario_id)
+
+    if usuario is None or usuario.get("excluido", False):
+        abort(404)
     
+    if request.method == "POST"
+
+    nome = request.form.get("nome", "")
+    email = request.form.get("email", "")
+    senha = request.form.get("senha", "")
+    nova_funcao = request.form.get("funcao", usuario["funcao"])
+
+    arquivo_foto = request.files.get("foto_perfil")
+
+    try:
+        foto = None
+
+        if arquivo_foto and arquivo_foto.filename:
+            foto = salvar_foto_perfil(arquivo_foto)
+
+        editar_usuario(
+            usuario_id,
+            nome,
+            email,
+            senha,
+            foto_perfil = foto
+        )
+
+        alterar_funcao_usuario(
+            usuario_id,
+            nova_funcao,
+            session["user_id"]
+        )
+        flash("Usuario atualizado com sucesso.", "success")
+
+        return redirect(url_for("painel_admin"))
+    
+    except ValueError as erro:
+
+        usuario = buscar_usuario_por_id(usuario_id)
+
+        return render_template(
+            "edit-user.html",
+            usuario=usuario,
+            mensagem_erro= str(erro),
+            admin_editando= True
+        )
+    
+    return render_template(
+        "edit-user.html",
+        usuario=usuario,
+        admin_editando=True
+    )
+
 @app.route(
     "/admin/editar-usuario/<int:usuario_id>",
     methods=["GET", "POST"]
