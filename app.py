@@ -3,6 +3,7 @@ import os
 import json
 import tempfile
 import uuid
+import math
 
 from werkzeug.utils import secure_filename
 from datetime import datetime
@@ -600,7 +601,8 @@ def perfil():
         email=usuario["email"],
         funcao=usuario["funcao"],
         foto_perfil=usuario.get("foto_perfil", FOTO_PADRAO),
-        data_cadastro=usuario.get("data_cadastro")
+        data_cadastro=usuario.get("data_cadastro"),
+        dados_imc = usuario.get("dados_imc")
     )
 
 
@@ -1034,6 +1036,36 @@ def imc(peso, altura):
     }
 
     recomendacao = recomendacoes[classificacao]
+
+    # salva os dados do IMC na conta do usario conectado
+    usuario_id = session.get("user_id")
+
+    if usuario_id is not None:
+        usuarios = carregar_usuarios()
+
+        usuario = next(
+            (
+                u for u in usuarios
+                if u.get("id") == usuario_id
+                and not u.get("excluido", False)
+            ),
+            None
+        )
+
+        if usuario is not None:
+            usuario["dados_imc"] = {
+                "peso": peso,
+                "altura": altura,
+                "idade": idade,
+                "sexo": sexo,
+                "imc": round(imc_calculado, 2),
+                "classificacao": classificacao,
+                "data_calculo": datetime.now().strftime(
+                    "%d/%m/%Y %H:%M"
+                )
+            }
+
+            salvar_usuarios(usuarios)
 
     return render_template(
         "imc.html",

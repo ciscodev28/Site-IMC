@@ -98,6 +98,60 @@ Meu Perfil
 
     </section>
 
+
+    <section class="profile-card">
+
+        <h2>Meu IMC</h2>
+
+        {% if dados_imc %}
+
+            <div class="profile-data-grid">
+
+                <div>
+                    <span>Peso</span>
+                    <strong>{{ dados_imc.peso }} kg</strong>
+                </div>
+
+                <div>
+                    <span>Altura</span>
+                    <strong>{{ dados_imc.altura }} m</strong>
+                </div>
+
+                <div>
+                    <span>Idade</span>
+                    <strong>{{ dados_imc.idade }} anos</strong>
+                </div>
+
+                <div>
+                    <span>Sexo</span>
+                    <strong>{{ dados_imc.sexo|capitalize }}</strong>
+                </div>
+
+                <div>
+                    <span>Resultado do IMC</span>
+                    <strong>{{ dados_imc.imc }}</strong>
+                </div>
+
+                <div>
+                    <span>Classificação</span>
+                    <strong>{{ dados_imc.classificacao }}</strong>
+                </div>
+
+                <div>
+                    <span>Último cálculo</span>
+                    <strong>{{ dados_imc.data_calculo }}</strong>
+                </div>
+
+            </div>
+
+        {% else %}
+
+            <p>Você ainda não possui dados de IMC registrados.</p>
+
+        {% endif %}
+
+    </section>
+
     {% if funcao == "admin" %}
 
     <section class="profile-card">
