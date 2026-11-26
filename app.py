@@ -1,7 +1,8 @@
+
 import os
 import json
 import tempfile
-import uuid 
+import uuid
 
 from werkzeug.utils import secure_filename
 from datetime import datetime
@@ -19,14 +20,20 @@ from werkzeug.security import (
 
 from dotenv import load_dotenv
 
+
+# ============================================================
 # CONFIGURACAO
+# ============================================================
+
 load_dotenv()
 
 app = Flask(__name__)
 
 app.secret_key = os.getenv("SECRET_KEY")
+
 if not app.secret_key:
     raise RuntimeError("Configure uma SECRET_KEY forte no arquivo .env")
+
 
 ARQUIVO_BANCO = os.path.join(
     os.path.dirname(os.path.abspath(__file__)),
@@ -80,6 +87,7 @@ def salvar_foto_perfil(arquivo):
 
     return f"static/uploads/{nome_arquivo}"
 
+
 # ============================================================
 # PERSISTENCIA DE DADOS
 # ============================================================
@@ -100,6 +108,7 @@ def carregar_usuarios():
     try:
         with open(ARQUIVO_BANCO, "r", encoding="utf-8") as arquivo:
             usuarios = json.load(arquivo)
+
     except json.JSONDecodeError as erro:
         raise RuntimeError(
             "O arquivo data/database.json contem JSON invalido. "
@@ -107,17 +116,22 @@ def carregar_usuarios():
         ) from erro
 
     if not isinstance(usuarios, list):
-        raise RuntimeError("O database.json deve conter uma lista de usuarios.")
+        raise RuntimeError(
+            "O database.json deve conter uma lista de usuarios."
+        )
 
     alterado = False
 
     for usuario in usuarios:
+
         if "excluido" not in usuario:
             usuario["excluido"] = False
             alterado = True
+
         if "funcao" not in usuario:
             usuario["funcao"] = "comum"
             alterado = True
+
         if "foto_perfil" not in usuario:
             usuario["foto_perfil"] = FOTO_PADRAO
             alterado = True
@@ -142,12 +156,14 @@ def salvar_usuarios(usuarios):
             dir=pasta,
             delete=False
         ) as arquivo:
+
             json.dump(
                 usuarios,
                 arquivo,
                 ensure_ascii=False,
                 indent=4
             )
+
             caminho_temporario = arquivo.name
 
         os.replace(caminho_temporario, ARQUIVO_BANCO)
@@ -165,14 +181,18 @@ inicializar_banco()
 # ============================================================
 
 def buscar_usuario_por_id(usuario_id):
+
     for usuario in carregar_usuarios():
+
         if usuario.get("id") == usuario_id:
             return usuario
+
     return None
 
 
 def listar_usuarios():
     """Retorna todos os usuarios para o painel, sem hashes de senha."""
+
     campos_publicos = (
         "id", "nome", "email", "data_cadastro",
         "funcao", "excluido", "foto_perfil"
@@ -181,6 +201,7 @@ def listar_usuarios():
     resultado = []
 
     for usuario in carregar_usuarios():
+
         resultado.append({
             campo: usuario.get(campo)
             for campo in campos_publicos
@@ -190,6 +211,7 @@ def listar_usuarios():
 
 
 def contar_administradores_ativos(usuarios=None):
+
     if usuarios is None:
         usuarios = carregar_usuarios()
 
@@ -200,8 +222,9 @@ def contar_administradores_ativos(usuarios=None):
     )
 
 
-def criar_usuario(nome, email, senha, funcao="comum", foto_perfil= None):
+def criar_usuario(nome, email, senha, funcao="comum", foto_perfil=None):
     """Cria usuario; a funcao e comum por padrao."""
+
     usuarios = carregar_usuarios()
 
     nome = (nome or "").strip()
@@ -252,7 +275,8 @@ def criar_usuario(nome, email, senha, funcao="comum", foto_perfil= None):
 
 
 def editar_usuario(usuario_id, nome, email, senha=None, foto_perfil=None):
-    """Atualiza nome/e-mail e, opcionalmente, a senha."""
+    """Atualiza nome, e-mail, senha e, opcionalmente, a foto."""
+
     usuarios = carregar_usuarios()
 
     nome = (nome or "").strip()
@@ -268,6 +292,7 @@ def editar_usuario(usuario_id, nome, email, senha=None, foto_perfil=None):
     usuario_alvo = None
 
     for usuario in usuarios:
+
         if usuario.get("id") == usuario_id:
             usuario_alvo = usuario
             break
@@ -276,6 +301,7 @@ def editar_usuario(usuario_id, nome, email, senha=None, foto_perfil=None):
         raise ValueError("Usuario nao encontrado ou desativado.")
 
     for usuario in usuarios:
+
         if (
             usuario.get("id") != usuario_id
             and usuario.get("email", "").strip().lower() == email
@@ -286,17 +312,20 @@ def editar_usuario(usuario_id, nome, email, senha=None, foto_perfil=None):
     usuario_alvo["email"] = email
 
     if senha:
+
         if len(senha) < 8:
-            raise ValueError("A nova senha deve ter pelo menos 8 caracteres.")
+            raise ValueError(
+                "A nova senha deve ter pelo menos 8 caracteres."
+            )
 
         usuario_alvo["senha_hash"] = generate_password_hash(
             senha,
             method="pbkdf2:sha256"
         )
-    
+
     if foto_perfil:
         usuario_alvo["foto_perfil"] = foto_perfil
-    
+
     salvar_usuarios(usuarios)
 
     return True
@@ -304,10 +333,12 @@ def editar_usuario(usuario_id, nome, email, senha=None, foto_perfil=None):
 
 def alterar_funcao_usuario(usuario_id, nova_funcao, administrador_atual_id):
     """Permite ao administrador alterar a funcao sem remover o ultimo admin."""
+
     if nova_funcao not in ("comum", "admin"):
         raise ValueError("Funcao invalida.")
 
     usuarios = carregar_usuarios()
+
     alvo = next(
         (u for u in usuarios if u.get("id") == usuario_id),
         None
@@ -321,7 +352,9 @@ def alterar_funcao_usuario(usuario_id, nova_funcao, administrador_atual_id):
         and nova_funcao != "admin"
         and contar_administradores_ativos(usuarios) <= 1
     ):
-        raise ValueError("Nao e possivel remover o ultimo administrador.")
+        raise ValueError(
+            "Nao e possivel remover o ultimo administrador."
+        )
 
     alvo["funcao"] = nova_funcao
     salvar_usuarios(usuarios)
@@ -334,6 +367,7 @@ def alterar_funcao_usuario(usuario_id, nova_funcao, administrador_atual_id):
 
 def excluir_usuario(usuario_id):
     """Exclusao logica: preserva o registro no database.json."""
+
     usuarios = carregar_usuarios()
 
     alvo = next(
@@ -348,14 +382,18 @@ def excluir_usuario(usuario_id):
         alvo.get("funcao") == "admin"
         and contar_administradores_ativos(usuarios) <= 1
     ):
-        raise ValueError("Nao e possivel excluir o ultimo administrador.")
+        raise ValueError(
+            "Nao e possivel excluir o ultimo administrador."
+        )
 
     alvo["excluido"] = True
     salvar_usuarios(usuarios)
+
     return True
 
 
 def reativar_usuario(usuario_id):
+
     usuarios = carregar_usuarios()
 
     alvo = next(
@@ -368,15 +406,19 @@ def reativar_usuario(usuario_id):
 
     alvo["excluido"] = False
     salvar_usuarios(usuarios)
+
     return True
+
 
 # ============================================================
 # DECORADORES DE AUTENTICACAO E AUTORIZACAO
 # ============================================================
 
 def login_required(funcao):
+
     @wraps(funcao)
     def decorada(*args, **kwargs):
+
         user_id = session.get("user_id")
 
         if user_id is None:
@@ -398,8 +440,10 @@ def login_required(funcao):
 
 
 def admin_required(funcao):
+
     @wraps(funcao)
     def decorada(*args, **kwargs):
+
         user_id = session.get("user_id")
 
         if user_id is None:
@@ -438,7 +482,9 @@ def sobre():
 
 @app.route("/cadastro", methods=["GET", "POST"])
 def cadastro():
+
     if request.method == "POST":
+
         nome = request.form.get("nome", "")
         email = request.form.get("email", "")
         senha = request.form.get("senha", "")
@@ -446,24 +492,36 @@ def cadastro():
         arquivo_foto = request.files.get("foto_perfil")
 
         if senha != confirmar_senha:
+
             return render_template(
                 "register.html",
-                mensagem_erro= "As senhas não coincidem",
-                nome= nome,
-                email= email
+                mensagem_erro="As senhas não coincidem",
+                nome=nome,
+                email=email
             )
 
         # Cadastro publico nunca permite escolher funcao admin.
         try:
-            arquivo_foto = request.files.get("foto_perfil")
 
             foto = salvar_foto_perfil(arquivo_foto)
 
-            criar_usuario(nome, email, senha, funcao="comum",foto_perfil = foto)
-            
-            flash("Cadastro realizado com sucesso! Faca seu login.", "success")
+            criar_usuario(
+                nome,
+                email,
+                senha,
+                funcao="comum",
+                foto_perfil=foto
+            )
+
+            flash(
+                "Cadastro realizado com sucesso! Faca seu login.",
+                "success"
+            )
+
             return redirect(url_for("login"))
+
         except ValueError as erro:
+
             return render_template(
                 "register.html",
                 mensagem_erro=str(erro),
@@ -476,11 +534,14 @@ def cadastro():
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
+
     if request.method == "POST":
+
         email = request.form.get("email", "").strip().lower()
         senha = request.form.get("senha", "")
 
         usuarios = carregar_usuarios()
+
         usuario = next(
             (
                 u for u in usuarios
@@ -494,6 +555,7 @@ def login():
             or usuario.get("excluido", False)
             or not check_password_hash(usuario.get("senha_hash", ""), senha)
         ):
+
             return render_template(
                 "login.html",
                 mensagem_erro="E-mail ou senha incorretos.",
@@ -506,6 +568,7 @@ def login():
         session["funcao"] = usuario["funcao"]
 
         flash("Login realizado com sucesso!", "success")
+
         return redirect(url_for("inicio"))
 
     return render_template("login.html")
@@ -513,8 +576,11 @@ def login():
 
 @app.route("/logout")
 def logout():
+
     session.clear()
+
     flash("Voce saiu da sua conta.", "success")
+
     return redirect(url_for("login"))
 
 
@@ -525,6 +591,7 @@ def logout():
 @app.route("/profile")
 @login_required
 def perfil():
+
     usuario = buscar_usuario_por_id(session["user_id"])
 
     return render_template(
@@ -533,21 +600,25 @@ def perfil():
         email=usuario["email"],
         funcao=usuario["funcao"],
         foto_perfil=usuario.get("foto_perfil", FOTO_PADRAO),
-        data_cadastro= usuario.get("data_cadastro")
+        data_cadastro=usuario.get("data_cadastro")
     )
 
 
 @app.route("/editar-perfil", methods=["GET", "POST"])
 @login_required
 def editar_perfil():
+
     usuario_id = session["user_id"]
     usuario = buscar_usuario_por_id(usuario_id)
 
     if request.method == "POST":
+
         nome = request.form.get("nome", "")
         email = request.form.get("email", "")
         senha = request.form.get("senha", "")
-        arquivo_foto = request.files.gt("foto_pefil")
+
+        arquivo_foto = request.files.get("foto_perfil")
+
         try:
 
             foto = None
@@ -555,15 +626,23 @@ def editar_perfil():
             if arquivo_foto and arquivo_foto.filename:
                 foto = salvar_foto_perfil(arquivo_foto)
 
-            editar_usuario(usuario_id, nome, email, senha, foto_perfil = foto)
+            editar_usuario(
+                usuario_id,
+                nome,
+                email,
+                senha,
+                foto_perfil=foto
+            )
 
             usuario_atualizado = buscar_usuario_por_id(usuario_id)
             session["email"] = usuario_atualizado["email"]
 
             flash("Perfil atualizado com sucesso!", "success")
+
             return redirect(url_for("perfil"))
 
         except ValueError as erro:
+
             usuario = buscar_usuario_por_id(usuario_id)
 
             return render_template(
@@ -583,19 +662,27 @@ def editar_perfil():
 @app.route("/excluir-conta", methods=["POST"])
 @login_required
 def excluir_propria_conta():
+
     usuario_id = session["user_id"]
 
     try:
+
         if excluir_usuario(usuario_id):
+
             session.clear()
+
             flash("Sua conta foi desativada.", "success")
+
             return redirect(url_for("inicio"))
 
         flash("Nao foi possivel desativar sua conta.", "error")
+
         return redirect(url_for("perfil"))
 
     except ValueError as erro:
+
         flash(str(erro), "error")
+
         return redirect(url_for("perfil"))
 
 
@@ -606,11 +693,13 @@ def excluir_propria_conta():
 @app.route("/admin/painel")
 @admin_required
 def painel_admin():
+
     usuarios = listar_usuarios()
 
     total = len(usuarios)
     ativos = sum(1 for u in usuarios if not u["excluido"])
     excluidos = total - ativos
+
     administradores = sum(
         1 for u in usuarios
         if u["funcao"] == "admin" and not u["excluido"]
@@ -633,80 +722,24 @@ def painel_admin():
 @app.route("/admin/criar-usuario", methods=["POST"])
 @admin_required
 def rota_criar_usuario_admin():
+
     nome = request.form.get("nome", "")
     email = request.form.get("email", "")
     senha = request.form.get("senha", "")
     funcao = request.form.get("funcao", "comum")
 
     try:
+
         criar_usuario(nome, email, senha, funcao=funcao)
+
         flash("Usuario criado com sucesso.", "success")
+
     except ValueError as erro:
+
         flash(str(erro), "error")
 
     return redirect(url_for("painel_admin"))
 
-
-@app.route(
-    "/admin/editar-usuario/<int:usuario_id>",
-    methods=["GET", "POST"]
-)
-@admin_required
-def rota_editar_usuario_admin(usuario_id):
-
-    usuario = buscar_usuario_por_id(usuario_id)
-
-    if usuario is None or usuario.get("excluido", False):
-        abort(404)
-    
-    if request.method == "POST"
-
-    nome = request.form.get("nome", "")
-    email = request.form.get("email", "")
-    senha = request.form.get("senha", "")
-    nova_funcao = request.form.get("funcao", usuario["funcao"])
-
-    arquivo_foto = request.files.get("foto_perfil")
-
-    try:
-        foto = None
-
-        if arquivo_foto and arquivo_foto.filename:
-            foto = salvar_foto_perfil(arquivo_foto)
-
-        editar_usuario(
-            usuario_id,
-            nome,
-            email,
-            senha,
-            foto_perfil = foto
-        )
-
-        alterar_funcao_usuario(
-            usuario_id,
-            nova_funcao,
-            session["user_id"]
-        )
-        flash("Usuario atualizado com sucesso.", "success")
-
-        return redirect(url_for("painel_admin"))
-    
-    except ValueError as erro:
-
-        usuario = buscar_usuario_por_id(usuario_id)
-
-        return render_template(
-            "edit-user.html",
-            usuario=usuario,
-            mensagem_erro= str(erro),
-            admin_editando= True
-        )
-    
-    return render_template(
-        "edit-user.html",
-        usuario=usuario,
-        admin_editando=True
-    )
 
 @app.route(
     "/admin/editar-usuario/<int:usuario_id>",
@@ -772,26 +805,31 @@ def rota_editar_usuario_admin(usuario_id):
     )
 
 
-
 @app.route(
     "/admin/excluir-usuario/<int:usuario_id>",
     methods=["POST"]
 )
 @admin_required
 def rota_excluir_usuario(usuario_id):
+
     if session["user_id"] == usuario_id:
+
         flash(
             "Use a opcao de desativar propria conta para encerrar sua conta.",
             "error"
         )
+
         return redirect(url_for("painel_admin"))
 
     try:
+
         if excluir_usuario(usuario_id):
             flash("Usuario desativado com sucesso.", "success")
         else:
             flash("Usuario nao encontrado ou ja desativado.", "error")
+
     except ValueError as erro:
+
         flash(str(erro), "error")
 
     return redirect(url_for("painel_admin"))
@@ -803,6 +841,7 @@ def rota_excluir_usuario(usuario_id):
 )
 @admin_required
 def rota_reativar_usuario(usuario_id):
+
     if reativar_usuario(usuario_id):
         flash("Usuario reativado com sucesso.", "success")
     else:
@@ -810,37 +849,49 @@ def rota_reativar_usuario(usuario_id):
 
     return redirect(url_for("painel_admin"))
 
+
 # ============================================================
 # ROTAS DE EXEMPLO DO PROJETO
 # ============================================================
 
 @app.route("/math/<op>/<a>/<b>")
 def math(op, a, b):
+
     try:
         a = float(a)
         b = float(b)
+
     except ValueError:
         abort(400)
 
     if op == "soma":
+
         resultado = a + b
         nome_operacao = "Soma"
         simbolo = "+"
+
     elif op == "subtracao":
+
         resultado = a - b
         nome_operacao = "Subtracao"
         simbolo = "-"
+
     elif op == "multiplicacao":
+
         resultado = a * b
         nome_operacao = "Multiplicacao"
         simbolo = "x"
+
     elif op == "divisao":
+
         nome_operacao = "Divisao"
         simbolo = "÷"
+
         if b == 0:
             resultado = "Nao e possivel dividir por zero."
         else:
             resultado = a / b
+
     else:
         return "Operacao invalida.", 400
 
@@ -856,9 +907,11 @@ def math(op, a, b):
 
 @app.route("/imc/<peso>/<altura>")
 def imc(peso, altura):
+
     try:
         peso = float(peso)
         altura = float(altura)
+
     except ValueError:
         abort(400)
 
@@ -877,10 +930,13 @@ def imc(peso, altura):
 
     if imc_calculado < 18.5:
         classificacao = "Abaixo do peso"
+
     elif imc_calculado < 25:
         classificacao = "Normal"
+
     elif imc_calculado < 30:
         classificacao = "Sobrepeso"
+
     else:
         classificacao = "Obesidade"
 
@@ -889,8 +945,10 @@ def imc(peso, altura):
 
     if imc_calculado <= imc_minimo_barra:
         posicao_barra = 0
+
     elif imc_calculado >= imc_maximo_barra:
         posicao_barra = 100
+
     else:
         posicao_barra = (
             (imc_calculado - imc_minimo_barra)
@@ -901,57 +959,78 @@ def imc(peso, altura):
     classificacao_gordura = None
 
     if idade is not None and sexo in ("masculino", "feminino"):
+
         if sexo == "masculino":
+
             percentual_gordura = (
                 1.20 * imc_calculado + 0.23 * idade - 16.2
             )
+
         else:
+
             percentual_gordura = (
                 1.20 * imc_calculado + 0.23 * idade - 5.4
             )
 
     if percentual_gordura is not None:
+
         if sexo == "masculino":
+
             if percentual_gordura < 6:
                 classificacao_gordura = "Essencial"
+
             elif percentual_gordura < 14:
                 classificacao_gordura = "Atletico"
+
             elif percentual_gordura < 18:
                 classificacao_gordura = "Fitness"
+
             elif percentual_gordura < 25:
                 classificacao_gordura = "Aceitavel"
+
             else:
                 classificacao_gordura = "Acima da faixa de referencia"
+
         else:
+
             if percentual_gordura < 14:
                 classificacao_gordura = "Essencial"
+
             elif percentual_gordura < 21:
                 classificacao_gordura = "Atletico"
+
             elif percentual_gordura < 25:
                 classificacao_gordura = "Fitness"
+
             elif percentual_gordura < 32:
                 classificacao_gordura = "Aceitavel"
+
             else:
                 classificacao_gordura = "Acima da faixa de referencia"
 
     recomendacoes = {
+
         "Abaixo do peso": (
             "Os resultados de IMC sao apenas indicadores gerais. "
             "Procure orientacao de um profissional de saude para "
             "interpretar seus dados individualmente."
         ),
+
         "Normal": (
             "O IMC e um indicador geral e nao substitui uma avaliacao "
             "individual feita por um profissional de saude."
         ),
+
         "Sobrepeso": (
             "O IMC isolado nao determina o estado de saude. "
             "Uma avaliacao profissional considera outros fatores."
         ),
+
         "Obesidade": (
             "O IMC isolado nao estabelece um diagnostico. "
             "Procure orientacao profissional para uma avaliacao individual."
         )
+
     }
 
     recomendacao = recomendacoes[classificacao]
@@ -977,6 +1056,7 @@ def imc(peso, altura):
 
 @app.route("/imc-novo")
 def imc_novo():
+
     peso = request.args.get("peso")
     altura = request.args.get("altura")
     idade = request.args.get("idade")
